@@ -6,7 +6,7 @@ export default registerAs(
   (): TypeOrmModuleOptions => ({
     type: 'postgres',
     host: process.env.DB_HOST || 'localhost',
-    port: parseInt(process.env.DB_PORT, 10) || 5432,
+    port: parseInt(process.env.DB_PORT || '5432', 10),
     username: process.env.DB_USER || 'postgres',
     password: process.env.DB_PASSWORD || 'postgres',
     database: process.env.DB_NAME || 'itunes_podcasts_dev',
@@ -14,10 +14,10 @@ export default registerAs(
     synchronize: process.env.DB_SYNCHRONIZE === 'true',
     logging: process.env.DB_LOGGING === 'true',
     ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false,
-    poolSize: parseInt(process.env.DB_POOL_MAX, 10) || 10,
+    poolSize: parseInt(process.env.DB_POOL_MAX || '10', 10),
     extra: {
-      min: parseInt(process.env.DB_POOL_MIN, 10) || 2,
-      max: parseInt(process.env.DB_POOL_MAX, 10) || 10,
+      min: parseInt(process.env.DB_POOL_MIN || '2', 10),
+      max: parseInt(process.env.DB_POOL_MAX || '10', 10),
     },
   }),
 );

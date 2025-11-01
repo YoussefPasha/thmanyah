@@ -14,10 +14,10 @@ export class ITunesService {
   private readonly retryDelay: number;
 
   constructor(private configService: ConfigService) {
-    this.baseUrl = this.configService.get<string>('app.itunesApiUrl');
-    this.timeout = this.configService.get<number>('app.itunesApiTimeout');
-    this.retryAttempts = this.configService.get<number>('app.itunesApiRetryAttempts');
-    this.retryDelay = this.configService.get<number>('app.itunesApiRetryDelay');
+    this.baseUrl = this.configService.get<string>('app.itunesApiUrl') || 'https://itunes.apple.com';
+    this.timeout = this.configService.get<number>('app.itunesApiTimeout') || 10000;
+    this.retryAttempts = this.configService.get<number>('app.itunesApiRetryAttempts') || 3;
+    this.retryDelay = this.configService.get<number>('app.itunesApiRetryDelay') || 1000;
 
     this.axiosInstance = axios.create({
       baseURL: this.baseUrl,

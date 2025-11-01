@@ -14,11 +14,11 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
 
   // Global prefix
-  const apiPrefix = configService.get<string>('app.apiPrefix');
+  const apiPrefix = configService.get<string>('app.apiPrefix') || 'api/v1';
   app.setGlobalPrefix(apiPrefix);
 
   // CORS
-  const corsOrigin = configService.get<string>('app.corsOrigin');
+  const corsOrigin = configService.get<string>('app.corsOrigin') || 'http://localhost:3001';
   app.enableCors({
     origin: corsOrigin.split(','),
     credentials: true,
@@ -44,8 +44,8 @@ async function bootstrap() {
   );
 
   // Get port
-  const port = configService.get<number>('app.port');
-  const nodeEnv = configService.get<string>('app.nodeEnv');
+  const port = configService.get<number>('app.port') || 3000;
+  const nodeEnv = configService.get<string>('app.nodeEnv') || 'development';
 
   await app.listen(port);
 

@@ -38,8 +38,8 @@ export class PodcastService {
     return {
       podcasts: podcasts.map((podcast) => PodcastResponseDto.fromEntity(podcast)),
       total: itunesResponse.resultCount,
-      limit,
-      offset,
+      limit: limit || 20,
+      offset: offset || 0,
     };
   }
 
@@ -119,7 +119,7 @@ export class PodcastService {
       artworkUrl600: itunesPodcast.artworkUrl600,
       feedUrl: itunesPodcast.feedUrl,
       trackViewUrl: itunesPodcast.trackViewUrl,
-      releaseDate: itunesPodcast.releaseDate ? new Date(itunesPodcast.releaseDate) : null,
+      releaseDate: itunesPodcast.releaseDate ? new Date(itunesPodcast.releaseDate) : undefined,
       country: itunesPodcast.country,
       primaryGenreName: itunesPodcast.primaryGenreName,
       genreIds: itunesPodcast.genreIds || [],

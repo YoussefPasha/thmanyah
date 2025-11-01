@@ -20,7 +20,7 @@ export class ValidationPipe implements PipeTransform<any> {
     if (errors.length > 0) {
       const messages = errors.map((error) => ({
         field: error.property,
-        message: Object.values(error.constraints).join(', '),
+        message: Object.values(error.constraints || {}).join(', '),
       }));
 
       throw new BadRequestException({

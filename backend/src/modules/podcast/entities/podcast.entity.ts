@@ -43,7 +43,7 @@ export class Podcast {
   @Column({ type: 'timestamp', nullable: true, name: 'release_date' })
   releaseDate: Date;
 
-  @Column({ type: 'varchar', length: 2, nullable: true })
+  @Column({ type: 'varchar', length: 10, nullable: true })
   country: string;
 
   @Column({ type: 'varchar', length: 100, nullable: true, name: 'primary_genre_name' })
