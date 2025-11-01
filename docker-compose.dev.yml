@@ -1,0 +1,116 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: itunes-postgres-dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-itunes_podcasts_dev}
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data_dev:/var/lib/postgresql/data
+      - ./backend/init-scripts:/docker-entrypoint-initdb.d
+    networks:
+      - itunes-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Backend Service
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    container_name: itunes-backend-dev
+    restart: unless-stopped
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      
+      # Database Configuration
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-itunes_podcasts_dev}
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-postgres}
+      DB_SYNCHRONIZE: "true"
+      DB_LOGGING: "true"
+      DB_SSL: "false"
+      DB_POOL_MIN: 2
+      DB_POOL_MAX: 10
+      
+      # iTunes API Configuration
+      ITUNES_API_URL: https://itunes.apple.com
+      ITUNES_API_TIMEOUT: 10000
+      ITUNES_API_RETRY_ATTEMPTS: 3
+      ITUNES_API_RETRY_DELAY: 1000
+      
+      # Application Configuration
+      API_PREFIX: api/v1
+      RATE_LIMIT_TTL: 60
+      RATE_LIMIT_MAX: 100
+      
+      # CORS Configuration
+      CORS_ORIGIN: http://localhost:3001
+      
+      # Logging
+      LOG_LEVEL: debug
+      
+      # Security
+      HELMET_ENABLED: "true"
+      COMPRESSION_ENABLED: "true"
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+      - backend_logs_dev:/app/logs
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - itunes-network
+    command: npm run start:dev
+
+  # Frontend Service
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: itunes-frontend-dev
+    restart: unless-stopped
+    environment:
+      NODE_ENV: development
+      NEXT_PUBLIC_API_URL: http://localhost:3000/api/v1
+      NEXT_PUBLIC_APP_NAME: iTunes Podcast Search
+      WATCHPACK_POLLING: "true"
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    depends_on:
+      - backend
+    networks:
+      - itunes-network
+    command: npm run dev
+
+networks:
+  itunes-network:
+    driver: bridge
+
+volumes:
+  postgres_data_dev:
+    driver: local
+  backend_logs_dev:
+    driver: local
+

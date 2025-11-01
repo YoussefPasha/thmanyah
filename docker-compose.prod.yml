@@ -1,0 +1,148 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: itunes-postgres-prod
+    restart: always
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data_prod:/var/lib/postgresql/data
+      - ./backend/init-scripts:/docker-entrypoint-initdb.d
+    networks:
+      - itunes-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER}"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+
+  # Backend Service
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.prod
+      args:
+        NODE_ENV: production
+    container_name: itunes-backend-prod
+    restart: always
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      
+      # Database Configuration
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_SYNCHRONIZE: "false"
+      DB_LOGGING: "false"
+      DB_SSL: "true"
+      DB_POOL_MIN: 5
+      DB_POOL_MAX: 20
+      
+      # iTunes API Configuration
+      ITUNES_API_URL: https://itunes.apple.com
+      ITUNES_API_TIMEOUT: 10000
+      ITUNES_API_RETRY_ATTEMPTS: 3
+      ITUNES_API_RETRY_DELAY: 1000
+      
+      # Application Configuration
+      API_PREFIX: api/v1
+      RATE_LIMIT_TTL: 60
+      RATE_LIMIT_MAX: 100
+      
+      # CORS Configuration
+      CORS_ORIGIN: ${FRONTEND_URL}
+      
+      # Logging
+      LOG_LEVEL: info
+      
+      # Security
+      HELMET_ENABLED: "true"
+      COMPRESSION_ENABLED: "true"
+    ports:
+      - "3000:3000"
+    volumes:
+      - backend_logs_prod:/app/logs
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - itunes-network
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/api/v1/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Frontend Service
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.prod
+      args:
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
+        NODE_ENV: production
+    container_name: itunes-frontend-prod
+    restart: always
+    environment:
+      NODE_ENV: production
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
+      NEXT_PUBLIC_APP_NAME: iTunes Podcast Search
+    ports:
+      - "3001:3001"
+    depends_on:
+      - backend
+    networks:
+      - itunes-network
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3001/api/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  itunes-network:
+    driver: bridge
+
+volumes:
+  postgres_data_prod:
+    driver: local
+  backend_logs_prod:
+    driver: local
+
