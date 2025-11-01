@@ -30,8 +30,8 @@ export function PodcastCard({ podcast }: PodcastCardProps) {
             </div>
           )}
           {podcast.trackExplicitContent && (
-            <div className="absolute right-2 top-2">
-              <Badge variant="destructive">Explicit</Badge>
+            <div className="absolute left-2 top-2">
+              <Badge variant="destructive">صريح</Badge>
             </div>
           )}
         </div>
@@ -48,7 +48,7 @@ export function PodcastCard({ podcast }: PodcastCardProps) {
               <Badge variant="secondary">{podcast.primaryGenreName}</Badge>
             )}
             {podcast.trackCount && (
-              <Badge variant="outline">{podcast.trackCount} episodes</Badge>
+              <Badge variant="outline">{podcast.trackCount} حلقة</Badge>
             )}
           </div>
           {podcast.releaseDate && (

@@ -47,9 +47,9 @@ export default function SearchPage() {
       <div className="space-y-8 py-8">
         <div className="space-y-4">
           <div>
-            <h1 className="mb-2 text-4xl font-bold">Search Podcasts</h1>
+            <h1 className="mb-2 text-4xl font-bold">البحث عن البودكاست</h1>
             <p className="text-muted-foreground">
-              Search through thousands of podcasts from the iTunes library
+              ابحث بين الآلاف من البودكاست من مكتبة iTunes
             </p>
           </div>
           <SearchBar 
@@ -62,15 +62,15 @@ export default function SearchPage() {
 
         {isError && (
           <ErrorMessage
-            message={error?.error?.message || 'Failed to fetch podcasts'}
+            message={error?.error?.message || 'فشل في جلب البودكاست'}
             retry={() => searchParams && handleSearch(searchParams.term)}
           />
         )}
 
         {!isLoading && !isError && searchParams && podcasts.length === 0 && (
           <EmptyState
-            title="No podcasts found"
-            message={`No results found for "${searchParams.term}". Try a different search term.`}
+            title="لم يتم العثور على بودكاست"
+            message={`لم يتم العثور على نتائج لـ "${searchParams.term}". جرب مصطلح بحث مختلف.`}
           />
         )}
 
@@ -79,10 +79,10 @@ export default function SearchPage() {
             <div className="flex items-center justify-between border-b pb-4">
               <div>
                 <p className="text-lg font-semibold">
-                  Found {formatNumber(total)} podcast{total !== 1 ? 's' : ''}
+                  تم العثور على {formatNumber(total)} بودكاست
                 </p>
                 <p className="text-sm text-muted-foreground">
-                  Showing results for "{searchParams?.term}"
+                  عرض النتائج لـ "{searchParams?.term}"
                 </p>
               </div>
             </div>
@@ -92,8 +92,8 @@ export default function SearchPage() {
 
         {!searchParams && !isLoading && (
           <EmptyState
-            title="Start Your Search"
-            message="Enter a search term above to find podcasts from the iTunes library"
+            title="ابدأ البحث"
+            message="أدخل مصطلح بحث أعلاه للعثور على البودكاست من مكتبة iTunes"
           />
         )}
       </div>

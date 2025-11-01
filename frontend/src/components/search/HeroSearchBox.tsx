@@ -27,7 +27,7 @@ export function HeroSearchBox() {
           </div>
           <Input
             type="text"
-            placeholder="Search for podcasts by name, topic, or creator..."
+            placeholder="ابحث عن البودكاست بالاسم أو الموضوع أو المنشئ..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="flex-1 border-0 bg-transparent text-lg placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0"
@@ -39,12 +39,12 @@ export function HeroSearchBox() {
             className="gap-2 rounded-xl px-6 text-base font-semibold"
           >
             <Sparkles className="h-5 w-5" />
-            Search
+            بحث
           </Button>
         </div>
         {searchTerm.trim().length > 0 && searchTerm.trim().length < 2 && (
           <p className="mt-3 text-center text-sm text-muted-foreground">
-            Please enter at least 2 characters to search
+            الرجاء إدخال حرفين على الأقل للبحث
           </p>
         )}
       </div>

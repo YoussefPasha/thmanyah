@@ -33,15 +33,14 @@ export default function HomePage() {
               </div>
               <div className="space-y-4">
                 <h1 className="bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-5xl font-bold tracking-tight text-transparent sm:text-6xl md:text-7xl">
-                  Discover Amazing
+                  اكتشف بودكاست
                   <br />
                   <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text">
-                    Podcasts
+                    مذهلة
                   </span>
                 </h1>
                 <p className="mx-auto max-w-2xl text-lg text-muted-foreground md:text-xl">
-                  Explore thousands of podcasts from the iTunes library. Find your next favorite
-                  show and discover new content creators.
+                  استكشف الآلاف من البودكاست من مكتبة iTunes. اعثر على برنامجك المفضل التالي واكتشف منشئي محتوى جدد.
                 </p>
               </div>
             </div>
@@ -55,15 +54,15 @@ export default function HomePage() {
             <div className="grid w-full max-w-3xl grid-cols-3 gap-6 pt-8">
               <div className="text-center">
                 <div className="text-3xl font-bold text-primary">{formatNumber(total)}</div>
-                <div className="text-sm text-muted-foreground">Podcasts</div>
+                <div className="text-sm text-muted-foreground">بودكاست</div>
               </div>
               <div className="text-center">
                 <div className="text-3xl font-bold text-primary">1M+</div>
-                <div className="text-sm text-muted-foreground">Episodes</div>
+                <div className="text-sm text-muted-foreground">حلقة</div>
               </div>
               <div className="text-center">
                 <div className="text-3xl font-bold text-primary">50+</div>
-                <div className="text-sm text-muted-foreground">Categories</div>
+                <div className="text-sm text-muted-foreground">تصنيف</div>
               </div>
             </div>
           </div>
@@ -74,8 +73,8 @@ export default function HomePage() {
       <Container>
         <div className="py-16">
           <div className="mb-12 text-center">
-            <h2 className="mb-4 text-3xl font-bold">Why Choose Us?</h2>
-            <p className="text-muted-foreground">Everything you need to discover and enjoy podcasts</p>
+            <h2 className="mb-4 text-3xl font-bold">لماذا تختارنا؟</h2>
+            <p className="text-muted-foreground">كل ما تحتاجه لاكتشاف والاستمتاع بالبودكاست</p>
           </div>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             <Card className="group border-2 transition-all hover:border-primary hover:shadow-lg">
@@ -83,10 +82,9 @@ export default function HomePage() {
                 <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10 transition-transform group-hover:scale-110">
                   <Search className="h-7 w-7 text-primary" />
                 </div>
-                <CardTitle className="text-xl">Powerful Search</CardTitle>
+                <CardTitle className="text-xl">بحث قوي</CardTitle>
                 <CardDescription className="text-base">
-                  Search podcasts by name, artist, or topic. Get instant results from the iTunes
-                  database with advanced filtering.
+                  ابحث عن البودكاست بالاسم أو الفنان أو الموضوع. احصل على نتائج فورية من قاعدة بيانات iTunes مع تصفية متقدمة.
                 </CardDescription>
               </CardHeader>
             </Card>
@@ -96,9 +94,9 @@ export default function HomePage() {
                 <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10 transition-transform group-hover:scale-110">
                   <Library className="h-7 w-7 text-primary" />
                 </div>
-                <CardTitle className="text-xl">Extensive Library</CardTitle>
+                <CardTitle className="text-xl">مكتبة واسعة</CardTitle>
                 <CardDescription className="text-base">
-                  Access millions of podcast episodes across all genres and categories from around the world.
+                  الوصول إلى ملايين حلقات البودكاست عبر جميع الأنواع والفئات من جميع أنحاء العالم.
                 </CardDescription>
               </CardHeader>
             </Card>
@@ -108,9 +106,9 @@ export default function HomePage() {
                 <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10 transition-transform group-hover:scale-110">
                   <TrendingUp className="h-7 w-7 text-primary" />
                 </div>
-                <CardTitle className="text-xl">Fresh Content</CardTitle>
+                <CardTitle className="text-xl">محتوى جديد</CardTitle>
                 <CardDescription className="text-base">
-                  Discover trending podcasts and explore new creators in your favorite genres daily.
+                  اكتشف البودكاست الشائع واستكشف منشئين جدد في أنواعك المفضلة يوميًا.
                 </CardDescription>
               </CardHeader>
             </Card>
@@ -124,15 +122,15 @@ export default function HomePage() {
           <div className="space-y-8">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="mb-2 text-3xl font-bold">Recent Podcasts</h2>
+                <h2 className="mb-2 text-3xl font-bold">البودكاست الأخيرة</h2>
                 <p className="text-muted-foreground">
-                  Browse our latest collection of podcasts from the database
+                  تصفح أحدث مجموعة من البودكاست من قاعدة البيانات
                 </p>
               </div>
               {podcasts.length > 0 && (
                 <Button asChild variant="outline" className="gap-2">
                   <Link href="/search">
-                    View All
+                    عرض الكل
                     <ChevronRight className="h-4 w-4" />
                   </Link>
                 </Button>
@@ -143,7 +141,7 @@ export default function HomePage() {
 
             {isError && (
               <ErrorMessage
-                message={error?.message || 'Failed to load podcasts'}
+                message={error?.message || 'فشل تحميل البودكاست'}
                 retry={() => mutate()}
               />
             )}
@@ -154,14 +152,14 @@ export default function HomePage() {
                   <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-muted">
                     <Sparkles className="h-10 w-10 text-muted-foreground" />
                   </div>
-                  <h3 className="mb-2 text-xl font-semibold">No Podcasts Yet</h3>
+                  <h3 className="mb-2 text-xl font-semibold">لا توجد بودكاست بعد</h3>
                   <p className="mb-6 text-muted-foreground">
-                    Start searching to discover and save podcasts to your collection
+                    ابدأ البحث لاكتشاف وحفظ البودكاست في مجموعتك
                   </p>
                   <Button asChild size="lg" className="gap-2">
                     <Link href="/search">
                       <Search className="h-5 w-5" />
-                      Start Searching
+                      ابدأ البحث
                     </Link>
                   </Button>
                 </CardContent>
@@ -182,15 +180,15 @@ export default function HomePage() {
             <CardContent className="flex flex-col items-center justify-center space-y-6 py-16 text-center">
               <Sparkles className="h-16 w-16 text-primary" />
               <div className="space-y-2">
-                <h2 className="text-3xl font-bold">Ready to Start Listening?</h2>
+                <h2 className="text-3xl font-bold">هل أنت مستعد لبدء الاستماع؟</h2>
                 <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
-                  Join thousands of podcast enthusiasts discovering amazing content every day
+                  انضم إلى الآلاف من عشاق البودكاست الذين يكتشفون محتوى رائع كل يوم
                 </p>
               </div>
               <Button asChild size="lg" className="gap-2 text-base">
                 <Link href="/search">
                   <Search className="h-5 w-5" />
-                  Explore Podcasts Now
+                  استكشف البودكاست الآن
                 </Link>
               </Button>
             </CardContent>

@@ -8,8 +8,8 @@ interface EmptyStateProps {
 }
 
 export function EmptyState({
-  title = 'No results found',
-  message = 'Try adjusting your search terms',
+  title = 'لم يتم العثور على نتائج',
+  message = 'حاول تعديل مصطلحات البحث',
   icon,
 }: EmptyStateProps) {
   return (

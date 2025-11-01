@@ -8,7 +8,7 @@ interface ErrorMessageProps {
   retry?: () => void;
 }
 
-export function ErrorMessage({ title = 'Error', message, retry }: ErrorMessageProps) {
+export function ErrorMessage({ title = 'خطأ', message, retry }: ErrorMessageProps) {
   return (
     <Alert variant="destructive">
       <AlertCircle className="h-4 w-4" />
@@ -18,9 +18,9 @@ export function ErrorMessage({ title = 'Error', message, retry }: ErrorMessagePr
         {retry && (
           <button
             onClick={retry}
-            className="ml-2 underline hover:no-underline"
+            className="mr-2 underline hover:no-underline"
           >
-            Try again
+            حاول مرة أخرى
           </button>
         )}
       </AlertDescription>

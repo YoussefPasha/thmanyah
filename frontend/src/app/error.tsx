@@ -22,11 +22,11 @@ export default function Error({
         <div className="mb-4 rounded-full bg-destructive/10 p-6">
           <AlertCircle className="h-16 w-16 text-destructive" />
         </div>
-        <h2 className="mb-2 text-2xl font-bold">Something went wrong!</h2>
+        <h2 className="mb-2 text-2xl font-bold">حدث خطأ ما!</h2>
         <p className="mb-6 text-muted-foreground">
-          We encountered an error while loading this page.
+          واجهنا خطأ أثناء تحميل هذه الصفحة.
         </p>
-        <Button onClick={() => reset()}>Try again</Button>
+        <Button onClick={() => reset()}>حاول مرة أخرى</Button>
       </div>
     </Container>
   );

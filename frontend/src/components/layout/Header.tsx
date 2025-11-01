@@ -14,13 +14,13 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center">
-        <Link href="/" className="group flex items-center space-x-2">
+        <Link href="/" className="group flex items-center space-x-2 space-x-reverse">
           <div className="rounded-lg bg-primary/10 p-1.5 transition-all group-hover:bg-primary/20">
             <Music className="h-5 w-5 text-primary" />
           </div>
           <span className="text-lg font-bold">{APP_NAME}</span>
         </Link>
-        <nav className="ml-auto flex items-center space-x-2 md:space-x-4">
+        <nav className="mr-auto flex items-center space-x-2 space-x-reverse md:space-x-4">
           <Link
             href="/"
             className={cn(
@@ -28,12 +28,12 @@ export function Header() {
               pathname === '/' ? 'text-primary' : 'text-muted-foreground'
             )}
           >
-            Home
+            الرئيسية
           </Link>
           <Button asChild variant={pathname === '/search' ? 'default' : 'ghost'} size="sm" className="gap-2">
             <Link href="/search">
               <Search className="h-4 w-4" />
-              <span className="hidden sm:inline">Search</span>
+              <span className="hidden sm:inline">بحث</span>
             </Link>
           </Button>
         </nav>

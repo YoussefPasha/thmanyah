@@ -50,7 +50,7 @@ export function PodcastDetails({ podcast }: PodcastDetailsProps) {
                 </p>
               </div>
               {podcast.trackExplicitContent && (
-                <Badge variant="destructive">Explicit</Badge>
+                <Badge variant="destructive">صريح</Badge>
               )}
             </div>
           </CardHeader>
@@ -70,7 +70,7 @@ export function PodcastDetails({ podcast }: PodcastDetailsProps) {
 
             {podcast.description && (
               <div>
-                <h3 className="mb-2 font-semibold">Description</h3>
+                <h3 className="mb-2 font-semibold">الوصف</h3>
                 <p className="text-muted-foreground">{podcast.description}</p>
               </div>
             )}
@@ -78,13 +78,13 @@ export function PodcastDetails({ podcast }: PodcastDetailsProps) {
             <div className="grid gap-4 sm:grid-cols-2">
               {podcast.trackCount && (
                 <div>
-                  <p className="text-sm font-medium">Episodes</p>
+                  <p className="text-sm font-medium">الحلقات</p>
                   <p className="text-2xl font-bold">{podcast.trackCount}</p>
                 </div>
               )}
               {podcast.releaseDate && (
                 <div>
-                  <p className="text-sm font-medium">Release Date</p>
+                  <p className="text-sm font-medium">تاريخ الإصدار</p>
                   <p className="flex items-center gap-2 text-muted-foreground">
                     <Calendar className="h-4 w-4" />
                     {formatDate(podcast.releaseDate)}
@@ -93,7 +93,7 @@ export function PodcastDetails({ podcast }: PodcastDetailsProps) {
               )}
               {podcast.country && (
                 <div>
-                  <p className="text-sm font-medium">Country</p>
+                  <p className="text-sm font-medium">البلد</p>
                   <p className="flex items-center gap-2 text-muted-foreground">
                     <Globe className="h-4 w-4" />
                     {podcast.country.toUpperCase()}
@@ -111,7 +111,7 @@ export function PodcastDetails({ podcast }: PodcastDetailsProps) {
                     rel="noopener noreferrer"
                     className="flex items-center gap-2"
                   >
-                    View on iTunes
+                    عرض على iTunes
                     <ExternalLink className="h-4 w-4" />
                   </a>
                 </Button>
@@ -124,7 +124,7 @@ export function PodcastDetails({ podcast }: PodcastDetailsProps) {
                     rel="noopener noreferrer"
                     className="flex items-center gap-2"
                   >
-                    RSS Feed
+                    RSS موجز
                     <ExternalLink className="h-4 w-4" />
                   </a>
                 </Button>

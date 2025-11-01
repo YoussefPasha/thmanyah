@@ -12,32 +12,32 @@ export function Footer() {
         <div className="grid gap-8 md:grid-cols-3">
           {/* Brand Section */}
           <div>
-            <Link href="/" className="mb-3 flex items-center space-x-2">
+            <Link href="/" className="mb-3 flex items-center space-x-2 space-x-reverse">
               <div className="rounded-lg bg-primary/10 p-1.5">
                 <Music className="h-5 w-5 text-primary" />
               </div>
               <span className="text-lg font-bold">{APP_NAME}</span>
             </Link>
             <p className="mb-2 text-sm text-muted-foreground">
-              Discover and explore thousands of podcasts from the iTunes library.
+              اكتشف واستكشف الآلاف من البودكاست من مكتبة iTunes.
             </p>
             <p className="text-xs text-muted-foreground">
-              Version {APP_VERSION}
+              الإصدار {APP_VERSION}
             </p>
           </div>
 
           {/* Quick Links */}
           <div>
-            <h3 className="mb-3 text-sm font-semibold">Quick Links</h3>
+            <h3 className="mb-3 text-sm font-semibold">روابط سريعة</h3>
             <ul className="space-y-2 text-sm">
               <li>
                 <Link href="/" className="text-muted-foreground transition-colors hover:text-primary">
-                  Home
+                  الرئيسية
                 </Link>
               </li>
               <li>
                 <Link href="/search" className="text-muted-foreground transition-colors hover:text-primary">
-                  Search Podcasts
+                  البحث عن البودكاست
                 </Link>
               </li>
             </ul>
@@ -45,7 +45,7 @@ export function Footer() {
 
           {/* Resources */}
           <div>
-            <h3 className="mb-3 text-sm font-semibold">Resources</h3>
+            <h3 className="mb-3 text-sm font-semibold">الموارد</h3>
             <ul className="space-y-2 text-sm">
               <li>
                 <a
@@ -54,7 +54,7 @@ export function Footer() {
                   rel="noopener noreferrer"
                   className="flex items-center gap-1 text-muted-foreground transition-colors hover:text-primary"
                 >
-                  iTunes Search API
+                  واجهة برمجة بحث iTunes
                   <ExternalLink className="h-3 w-3" />
                 </a>
               </li>
@@ -74,7 +74,7 @@ export function Footer() {
         </div>
 
         <div className="mt-8 border-t pt-8 text-center text-xs text-muted-foreground">
-          <p>© {currentYear} {APP_NAME}. All rights reserved.</p>
+          <p>© {currentYear} {APP_NAME}. جميع الحقوق محفوظة.</p>
         </div>
       </div>
     </footer>

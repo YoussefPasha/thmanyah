@@ -15,7 +15,7 @@ interface SearchBarProps {
 
 export function SearchBar({
   onSearch,
-  placeholder = 'Search for podcasts...',
+  placeholder = 'ابحث عن البودكاست...',
   defaultValue = '',
 }: SearchBarProps) {
   const [searchTerm, setSearchTerm] = useState(defaultValue);
@@ -45,22 +45,22 @@ export function SearchBar({
     <form onSubmit={handleSubmit} className="w-full">
       <div className="relative flex items-center gap-2">
         <div className="relative flex-1">
-          <SearchIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <SearchIcon className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             type="text"
             placeholder={placeholder}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10"
+            className="pr-10"
           />
         </div>
         <Button type="submit" disabled={searchTerm.trim().length < 2}>
-          Search
+          بحث
         </Button>
       </div>
       {searchTerm.trim().length > 0 && searchTerm.trim().length < 2 && (
         <p className="mt-2 text-sm text-muted-foreground">
-          Please enter at least 2 characters
+          الرجاء إدخال حرفين على الأقل
         </p>
       )}
     </form>
