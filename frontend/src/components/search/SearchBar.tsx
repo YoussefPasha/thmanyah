@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search as SearchIcon } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -21,7 +21,14 @@ export function SearchBar({
   const [searchTerm, setSearchTerm] = useState(defaultValue);
   const debouncedSearchTerm = useDebounce(searchTerm, DEBOUNCE_DELAY);
 
-  React.useEffect(() => {
+  // Sync with defaultValue when it changes (e.g., from URL)
+  useEffect(() => {
+    if (defaultValue) {
+      setSearchTerm(defaultValue);
+    }
+  }, [defaultValue]);
+
+  useEffect(() => {
     if (debouncedSearchTerm.trim().length >= 2) {
       onSearch(debouncedSearchTerm.trim());
     }

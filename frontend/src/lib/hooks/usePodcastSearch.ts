@@ -43,3 +43,25 @@ export function usePodcast(id: number | null) {
   };
 }
 
+export function usePodcasts(limit: number = 20, offset: number = 0) {
+  const { data, error, isLoading, mutate } = useSWR(
+    ['podcasts', limit, offset],
+    () => podcastApi.getAll(limit, offset),
+    {
+      revalidateOnFocus: false,
+      dedupingInterval: STALE_TIME,
+    },
+  );
+
+  return {
+    podcasts: data?.podcasts || [],
+    total: data?.total || 0,
+    limit: data?.limit || 20,
+    offset: data?.offset || 0,
+    isLoading,
+    isError: error,
+    error,
+    mutate,
+  };
+}
+
