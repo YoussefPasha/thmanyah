@@ -446,8 +446,8 @@ Response: 200 OK
 ```yaml
 Services:
   - postgres:16-alpine (Port 5432)
-  - backend (Port 3000)
-  - frontend (Port 3001)
+  - backend (Port 8080)
+  - frontend (Port 3000)
 
 Networks:
   - itunes-network (bridge)

@@ -30,9 +30,9 @@ A full-stack application that integrates with the iTunes Search API to search, s
    ```
 
 2. **Access the application:**
-   - Frontend: http://localhost:3001
-   - Backend API: http://localhost:3000/api/v1
-   - Health Check: http://localhost:3000/api/v1/health
+   - Frontend: http://localhost:3000
+   - Backend API: http://localhost:8080/api/v1
+   - Health Check: http://localhost:8080/api/v1/health
 
 3. **Stop services:**
    ```bash
@@ -47,7 +47,7 @@ A full-stack application that integrates with the iTunes Search API to search, s
 cd backend
 npm install
 cp .env.example .env  # Configure your environment variables
-npm run start:dev     # Runs on http://localhost:3000
+npm run start:dev     # Runs on http://localhost:8080
 ```
 
 #### Frontend
@@ -55,15 +55,15 @@ npm run start:dev     # Runs on http://localhost:3000
 ```bash
 cd frontend
 npm install
-echo "NEXT_PUBLIC_API_URL=http://localhost:3000/api/v1" > .env.local
-npm run dev           # Runs on http://localhost:3001
+echo "NEXT_PUBLIC_API_URL=http://localhost:8080/api/v1" > .env.local
+npm run dev           # Runs on http://localhost:3000
 ```
 
 ## 📖 Usage
 
-1. **Browse Podcasts** - Visit http://localhost:3001 to see podcasts from the database
+1. **Browse Podcasts** - Visit http://localhost:3000 to see podcasts from the database
 2. **Search from Homepage** - Type in the search box and press Enter
-3. **Direct URL Search** - Access http://localhost:3001/search?q=your-term
+3. **Direct URL Search** - Access http://localhost:3000/search?q=your-term
 4. **View Details** - Click any podcast card to see more information
 
 ## 🔧 Environment Variables
@@ -75,7 +75,7 @@ DB_PORT=5432
 DB_NAME=itunes_podcasts_dev
 DB_USER=postgres
 DB_PASSWORD=postgres
-CORS_ORIGIN=http://localhost:3001
+CORS_ORIGIN=http://localhost:3000
 ```
 
 ### Frontend (.env.local)

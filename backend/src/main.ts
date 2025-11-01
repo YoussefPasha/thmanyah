@@ -18,7 +18,7 @@ async function bootstrap() {
   app.setGlobalPrefix(apiPrefix);
 
   // CORS
-  const corsOrigin = configService.get<string>('app.corsOrigin') || 'http://localhost:3001';
+  const corsOrigin = configService.get<string>('app.corsOrigin') || 'http://localhost:3000';
   app.enableCors({
     origin: corsOrigin.split(','),
     credentials: true,
@@ -44,7 +44,7 @@ async function bootstrap() {
   );
 
   // Get port
-  const port = configService.get<number>('app.port') || 3000;
+  const port = configService.get<number>('app.port') || 8080;
   const nodeEnv = configService.get<string>('app.nodeEnv') || 'development';
 
   await app.listen(port);

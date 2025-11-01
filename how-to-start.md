@@ -29,22 +29,22 @@ docker-compose -f docker-compose.dev.yml up --build
 This command will:
 - Build the Docker images for backend and frontend
 - Start PostgreSQL database
-- Start the NestJS backend on port 3000
-- Start the Next.js frontend on port 3001
+- Start the NestJS backend on port 8080
+- Start the Next.js frontend on port 3000
 - Set up all networking between services
 
 ### Step 3: Wait for Services to Start
 
 You'll see logs from all three services. Wait until you see:
-- `🚀 Application is running on: http://localhost:3000/api/v1` (Backend)
+- `🚀 Application is running on: http://localhost:8080/api/v1` (Backend)
 - `✓ Ready in Xms` (Frontend)
 - `database system is ready to accept connections` (PostgreSQL)
 
 ### Step 4: Access the Application
 
-- **Frontend**: Open http://localhost:3001 in your browser
-- **Backend API**: http://localhost:3000/api/v1
-- **API Documentation**: http://localhost:3000/api/v1/podcasts/search?term=test
+- **Frontend**: Open http://localhost:3000 in your browser
+- **Backend API**: http://localhost:8080/api/v1
+- **API Documentation**: http://localhost:8080/api/v1/podcasts/search?term=test
 
 ### Step 5: Stop the Application
 
@@ -109,7 +109,7 @@ If you prefer to run services individually or don't want to use Docker.
    DB_NAME=itunes_podcasts_dev
    DB_USER=postgres
    DB_PASSWORD=postgres
-   CORS_ORIGIN=http://localhost:3001
+   CORS_ORIGIN=http://localhost:3000
    ```
 
 5. **Start the backend**
@@ -117,7 +117,7 @@ If you prefer to run services individually or don't want to use Docker.
    npm run start:dev
    ```
 
-   You should see: `🚀 Application is running on: http://localhost:3000/api/v1`
+   You should see: `🚀 Application is running on: http://localhost:8080/api/v1`
 
 ### Step 3: Set Up Frontend
 
@@ -133,7 +133,7 @@ If you prefer to run services individually or don't want to use Docker.
 
 3. **Create .env.local file**
    ```bash
-   echo "NEXT_PUBLIC_API_URL=http://localhost:3000/api/v1" > .env.local
+   echo "NEXT_PUBLIC_API_URL=http://localhost:8080/api/v1" > .env.local
    ```
 
 4. **Start the frontend**
@@ -141,17 +141,17 @@ If you prefer to run services individually or don't want to use Docker.
    npm run dev
    ```
 
-   You should see: `✓ Ready in Xms` and `Local: http://localhost:3001`
+   You should see: `✓ Ready in Xms` and `Local: http://localhost:3000`
 
 ### Step 4: Access the Application
 
-Open your browser and go to: http://localhost:3001
+Open your browser and go to: http://localhost:3000
 
 ## Verifying the Installation
 
 ### 1. Check Backend Health
 
-Visit: http://localhost:3000/api/v1/health
+Visit: http://localhost:8080/api/v1/health
 
 You should see:
 ```json
@@ -166,13 +166,13 @@ You should see:
 
 ### 2. Test Search Functionality
 
-Visit: http://localhost:3000/api/v1/podcasts/search?term=fnjan
+Visit: http://localhost:8080/api/v1/podcasts/search?term=fnjan
 
 You should see a JSON response with podcast data.
 
 ### 3. Check Frontend
 
-1. Go to http://localhost:3001
+1. Go to http://localhost:3000
 2. You should see the homepage with "Discover Amazing Podcasts"
 3. Click "Start Searching"
 4. Enter a search term like "fnjan" or "tech"
@@ -182,13 +182,13 @@ You should see a JSON response with podcast data.
 
 ### Issue: Port Already in Use
 
-**Error**: `Port 3000 is already in use` or `Port 3001 is already in use`
+**Error**: `Port 3000 is already in use` or `Port 3000 is already in use`
 
 **Solution**:
 ```bash
 # Find what's using the port (macOS/Linux)
 lsof -i :3000
-lsof -i :3001
+lsof -i :3000
 
 # Kill the process
 kill -9 <PID>
@@ -228,9 +228,9 @@ docker-compose -f docker-compose.dev.yml up
 **Error**: Network Error or API calls failing
 
 **Solution**:
-- Verify backend is running: curl http://localhost:3000/api/v1/health
-- Check CORS settings in backend `.env`: `CORS_ORIGIN=http://localhost:3001`
-- Check frontend `.env.local`: `NEXT_PUBLIC_API_URL=http://localhost:3000/api/v1`
+- Verify backend is running: curl http://localhost:8080/api/v1/health
+- Check CORS settings in backend `.env`: `CORS_ORIGIN=http://localhost:3000`
+- Check frontend `.env.local`: `NEXT_PUBLIC_API_URL=http://localhost:8080/api/v1`
 
 ### Issue: npm install fails
 
@@ -300,7 +300,7 @@ SELECT COUNT(*) FROM podcasts;
 After successfully starting the application:
 
 1. **Try searching** for different podcast terms
-2. **Explore the API** at http://localhost:3000/api/v1
+2. **Explore the API** at http://localhost:8080/api/v1
 3. **View database** to see stored podcasts
 4. **Modify code** and see hot reload in action
 5. **Check the ARCHITECTURE.md** for detailed system design

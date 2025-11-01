@@ -2,7 +2,7 @@ import { registerAs } from '@nestjs/config';
 
 export default registerAs('app', () => ({
   nodeEnv: process.env.NODE_ENV || 'development',
-  port: parseInt(process.env.PORT || '3000', 10),
+  port: parseInt(process.env.PORT || '8080', 10),
   apiPrefix: process.env.API_PREFIX || 'api/v1',
   
   // iTunes API Configuration
@@ -16,7 +16,7 @@ export default registerAs('app', () => ({
   rateLimitMax: parseInt(process.env.RATE_LIMIT_MAX || '100', 10),
   
   // CORS
-  corsOrigin: process.env.CORS_ORIGIN || 'http://localhost:3001',
+  corsOrigin: process.env.CORS_ORIGIN || 'http://localhost:3000',
   
   // Logging
   logLevel: process.env.LOG_LEVEL || 'debug',
