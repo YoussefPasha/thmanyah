@@ -1,49 +1,41 @@
-'use client';
-
-import { useState, useEffect, useCallback } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
 import { SearchBar } from '@/components/search/SearchBar';
 import { PodcastGrid } from '@/components/podcast/PodcastGrid';
-import { PodcastGridSkeleton } from '@/components/podcast/PodcastSkeleton';
 import { EmptyState } from '@/components/shared/EmptyState';
-import { ErrorMessage } from '@/components/shared/ErrorMessage';
 import { Container } from '@/components/layout/Container';
-import { usePodcastSearch } from '@/lib/hooks/usePodcastSearch';
-import type { SearchParams } from '@/types/api.types';
+import { podcastApi } from '@/lib/api/podcast.api';
 import { formatNumber } from '@/lib/utils/format';
+import type { Podcast } from '@/types/podcast.types';
 
-export default function SearchPage() {
-  const router = useRouter();
-  const urlSearchParams = useSearchParams();
-  const queryParam = urlSearchParams.get('q');
+export const revalidate = 60; // Revalidate every 60 seconds
+
+interface SearchPageProps {
+  searchParams: { q?: string | string[] };
+}
+
+export default async function SearchPage({ searchParams }: SearchPageProps) {
+  // Handle both string and string[] cases for query parameters
+  const rawSearchTerm = searchParams.q;
+  const searchTerm = (Array.isArray(rawSearchTerm) ? rawSearchTerm[0] : rawSearchTerm)?.trim();
   
-  const [searchParams, setSearchParams] = useState<SearchParams | null>(null);
-  const { podcasts, total, isLoading, isError, error } = usePodcastSearch(searchParams);
+  let podcasts: Podcast[] = [];
+  let total = 0;
+  let hasError = false;
 
-  // Initialize search from URL query parameter
-  useEffect(() => {
-    if (queryParam && queryParam.trim().length >= 2) {
-      setSearchParams({
-        term: queryParam.trim(),
+  // Only fetch if there's a search term with at least 2 characters
+  if (searchTerm && searchTerm.length >= 2) {
+    try {
+      const response = await podcastApi.search({
+        term: searchTerm,
         limit: 20,
         offset: 0,
       });
-    } else if (!queryParam) {
-      // Clear search params when query param is removed
-      setSearchParams(null);
+      podcasts = response.podcasts;
+      total = response.total;
+    } catch (error) {
+      console.error('Failed to search podcasts:', error);
+      hasError = true;
     }
-  }, [queryParam]);
-
-  const handleSearch = useCallback((term: string) => {
-    // Update URL with search query
-    router.push(`/search?q=${encodeURIComponent(term)}`);
-    
-    setSearchParams({
-      term,
-      limit: 20,
-      offset: 0,
-    });
-  }, [router]);
+  }
 
   return (
     <Container>
@@ -55,29 +47,24 @@ export default function SearchPage() {
               ابحث بين الآلاف من البودكاست من مكتبة iTunes
             </p>
           </div>
-          <SearchBar 
-            onSearch={handleSearch} 
-            defaultValue={queryParam || ''}
-          />
+          <SearchBar defaultValue={searchTerm || ''} />
         </div>
 
-        {isLoading && <PodcastGridSkeleton />}
-
-        {isError && (
-          <ErrorMessage
-            message={error?.error?.message || 'فشل في جلب البودكاست'}
-            retry={() => searchParams && handleSearch(searchParams.term)}
+        {hasError && searchTerm && (
+          <EmptyState
+            title="حدث خطأ"
+            message="فشل في جلب البودكاست. يرجى المحاولة مرة أخرى لاحقًا."
           />
         )}
 
-        {!isLoading && !isError && searchParams && podcasts.length === 0 && (
+        {!hasError && searchTerm && searchTerm.length >= 2 && podcasts.length === 0 && (
           <EmptyState
             title="لم يتم العثور على بودكاست"
-            message={`لم يتم العثور على نتائج لـ "${searchParams.term}". جرب مصطلح بحث مختلف.`}
+            message={`لم يتم العثور على نتائج لـ "${searchTerm}". جرب مصطلح بحث مختلف.`}
           />
         )}
 
-        {!isLoading && !isError && podcasts.length > 0 && (
+        {!hasError && podcasts.length > 0 && (
           <>
             <div className="flex items-center justify-between border-b pb-4">
               <div>
@@ -85,7 +72,7 @@ export default function SearchPage() {
                   تم العثور على {formatNumber(total)} بودكاست
                 </p>
                 <p className="text-sm text-muted-foreground">
-                  عرض النتائج لـ "{searchParams?.term}"
+                  عرض النتائج لـ "{searchTerm}"
                 </p>
               </div>
             </div>
@@ -93,7 +80,7 @@ export default function SearchPage() {
           </>
         )}
 
-        {!searchParams && !isLoading && (
+        {!searchTerm && (
           <EmptyState
             title="ابدأ البحث"
             message="أدخل مصطلح بحث أعلاه للعثور على البودكاست من مكتبة iTunes"

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import { Search as SearchIcon } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -8,13 +9,11 @@ import { useDebounce } from '@/lib/hooks/useDebounce';
 import { DEBOUNCE_DELAY } from '@/lib/constants/app.constants';
 
 interface SearchBarProps {
-  onSearch: (term: string) => void;
   placeholder?: string;
   defaultValue?: string;
 }
 
 export function SearchBar({
-  onSearch,
   placeholder = 'ابحث عن البودكاست...',
   defaultValue = '',
 }: SearchBarProps) {
@@ -22,6 +21,7 @@ export function SearchBar({
   const debouncedSearchTerm = useDebounce(searchTerm, DEBOUNCE_DELAY);
   const isInitialMount = useRef(true);
   const lastSearchedTerm = useRef<string>('');
+  const router = useRouter();
 
   // Sync with defaultValue when it changes (e.g., from URL)
   useEffect(() => {
@@ -43,16 +43,16 @@ export function SearchBar({
     const trimmedTerm = debouncedSearchTerm.trim();
     if (trimmedTerm.length >= 2 && trimmedTerm !== lastSearchedTerm.current) {
       lastSearchedTerm.current = trimmedTerm;
-      onSearch(trimmedTerm);
+      router.push(`/search?q=${encodeURIComponent(trimmedTerm)}`);
     }
-  }, [debouncedSearchTerm, onSearch]);
+  }, [debouncedSearchTerm, router]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const trimmedTerm = searchTerm.trim();
     if (trimmedTerm.length >= 2) {
       lastSearchedTerm.current = trimmedTerm;
-      onSearch(trimmedTerm);
+      router.push(`/search?q=${encodeURIComponent(trimmedTerm)}`);
     }
   };
 

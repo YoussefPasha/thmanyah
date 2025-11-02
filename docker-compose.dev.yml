@@ -85,7 +85,10 @@ services:
     restart: unless-stopped
     environment:
       NODE_ENV: development
+      # Client-side API URL (used in browser)
       NEXT_PUBLIC_API_URL: http://localhost:8080/api/v1
+      # Server-side API URL (used for SSR in Docker)
+      API_URL: http://backend:8080/api/v1
       WATCHPACK_POLLING: "true"
     ports:
       - "3000:3000"

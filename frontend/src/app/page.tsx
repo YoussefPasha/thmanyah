@@ -1,19 +1,29 @@
-'use client';
-
 import { Container } from '@/components/layout/Container';
 import { PodcastGrid } from '@/components/podcast/PodcastGrid';
-import { PodcastGridSkeleton } from '@/components/podcast/PodcastSkeleton';
 import { HeroSearchBox } from '@/components/search/HeroSearchBox';
-import { ErrorMessage } from '@/components/shared/ErrorMessage';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { usePodcasts } from '@/lib/hooks/usePodcastSearch';
+import { podcastApi } from '@/lib/api/podcast.api';
 import { formatNumber } from '@/lib/utils/format';
 import { ChevronLeft, Music, Search, Sparkles } from 'lucide-react';
 import Link from 'next/link';
+import type { Podcast } from '@/types/podcast.types';
 
-export default function HomePage() {
-  const { podcasts, total, isLoading, isError, error, mutate } = usePodcasts(12, 0);
+export const revalidate = 60; // Revalidate every 60 seconds
+
+export default async function HomePage() {
+  let podcasts: Podcast[] = [];
+  let total = 0;
+  let hasError = false;
+
+  try {
+    const response = await podcastApi.getAll(12, 0);
+    podcasts = response.podcasts;
+    total = response.total;
+  } catch (error) {
+    console.error('Failed to fetch podcasts:', error);
+    hasError = true;
+  }
 
   return (
     <div className="min-h-screen">
@@ -90,16 +100,18 @@ export default function HomePage() {
               )}
             </div>
 
-            {isLoading && <PodcastGridSkeleton />}
-
-            {isError && (
-              <ErrorMessage
-                message={error?.message || 'فشل تحميل البودكاست'}
-                retry={() => mutate()}
-              />
+            {hasError && (
+              <Card className="border-2 border-destructive/50">
+                <CardContent className="flex flex-col items-center justify-center py-16 text-center">
+                  <h3 className="mb-2 text-xl font-semibold">فشل تحميل البودكاست</h3>
+                  <p className="mb-6 text-muted-foreground">
+                    حدث خطأ أثناء تحميل البودكاست. يرجى المحاولة مرة أخرى لاحقًا.
+                  </p>
+                </CardContent>
+              </Card>
             )}
 
-            {!isLoading && !isError && podcasts.length === 0 && (
+            {!hasError && podcasts.length === 0 && (
               <Card className="border-2 border-dashed">
                 <CardContent className="flex flex-col items-center justify-center py-16 text-center">
                   <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-muted">
@@ -119,7 +131,7 @@ export default function HomePage() {
               </Card>
             )}
 
-            {!isLoading && !isError && podcasts.length > 0 && (
+            {!hasError && podcasts.length > 0 && (
               <PodcastGrid podcasts={podcasts} />
             )}
           </div>
