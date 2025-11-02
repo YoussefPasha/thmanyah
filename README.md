@@ -17,6 +17,9 @@ A full-stack application that integrates with the iTunes Search API to search, s
 - **Comprehensive Error Handling** - Beautiful error pages with custom SVG illustrations for 404, 500, 429 (rate limiting), and more
 - **Error Recovery** - Automatic error detection with retry functionality
 - **Animated UX** - Smooth animations and transitions for error states
+- **iTunes API Rate Limiting** - Intelligent rate limit handling with exponential backoff, request caching, and automatic retry logic
+- **Request Throttling** - Proactive rate limiting to prevent hitting iTunes API limits
+- **Response Caching** - In-memory caching reduces redundant API calls and improves performance
 
 ## 🛠️ Tech Stack
 
@@ -73,13 +76,25 @@ npm run dev           # Runs on http://localhost:3000
 
 ### Backend (.env)
 ```env
+# Database
 DB_HOST=localhost
 DB_PORT=5432
 DB_NAME=itunes_podcasts_dev
 DB_USER=postgres
 DB_PASSWORD=postgres
+
+# CORS
 CORS_ORIGIN=http://localhost:3000
+
+# iTunes API Rate Limiting (Optional - defaults provided)
+ITUNES_API_RETRY_ATTEMPTS=3
+ITUNES_API_RATE_LIMIT_RETRY_ATTEMPTS=5
+ITUNES_API_RATE_LIMIT_BACKOFF_MULTIPLIER=2
+ITUNES_API_CACHE_TTL=300000  # Cache TTL in milliseconds (300000ms = 5 minutes)
+ITUNES_API_MAX_REQUESTS_PER_SECOND=20
 ```
+
+See `backend/ITUNES_RATE_LIMITING.md` for detailed configuration options.
 
 ### Frontend (.env.local)
 ```env
@@ -88,10 +103,19 @@ NEXT_PUBLIC_API_URL=http://localhost:3000/api/v1
 
 ## 📡 API Endpoints
 
-- `GET /api/v1/podcasts/search?term={term}` - Search podcasts
+- `GET /api/v1/podcasts/search?term={term}` - Search podcasts (with rate limit handling)
 - `GET /api/v1/podcasts` - Get all podcasts
 - `GET /api/v1/podcasts/{id}` - Get podcast by ID
 - `GET /api/v1/health` - Health check
+
+### Rate Limiting
+The iTunes API integration includes comprehensive rate limit handling:
+- Automatic detection of rate limit responses (302, 429, 503)
+- Exponential backoff retry strategy
+- Request caching to reduce API calls
+- Proactive request throttling
+
+See `backend/ITUNES_RATE_LIMITING.md` for detailed documentation.
 
 ## 🎨 Error Handling
 

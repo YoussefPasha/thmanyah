@@ -10,6 +10,10 @@ export default registerAs('app', () => ({
   itunesApiTimeout: parseInt(process.env.ITUNES_API_TIMEOUT || '10000', 10),
   itunesApiRetryAttempts: parseInt(process.env.ITUNES_API_RETRY_ATTEMPTS || '3', 10),
   itunesApiRetryDelay: parseInt(process.env.ITUNES_API_RETRY_DELAY || '1000', 10),
+  itunesApiRateLimitRetryAttempts: parseInt(process.env.ITUNES_API_RATE_LIMIT_RETRY_ATTEMPTS || '5', 10),
+  itunesApiRateLimitBackoffMultiplier: parseFloat(process.env.ITUNES_API_RATE_LIMIT_BACKOFF_MULTIPLIER || '2', 10),
+  itunesApiCacheTtl: parseInt(process.env.ITUNES_API_CACHE_TTL || '300000', 10), // 5 minutes default (in milliseconds)
+  itunesApiMaxRequestsPerSecond: parseInt(process.env.ITUNES_API_MAX_REQUESTS_PER_SECOND || '20', 10),
   
   // Rate Limiting
   rateLimitTtl: parseInt(process.env.RATE_LIMIT_TTL || '60', 10),
