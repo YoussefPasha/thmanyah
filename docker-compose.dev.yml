@@ -86,7 +86,6 @@ services:
     environment:
       NODE_ENV: development
       NEXT_PUBLIC_API_URL: http://localhost:8080/api/v1
-      NEXT_PUBLIC_APP_NAME: iTunes Podcast Search
       WATCHPACK_POLLING: "true"
     ports:
       - "3000:3000"

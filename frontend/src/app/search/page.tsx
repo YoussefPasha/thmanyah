@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { SearchBar } from '@/components/search/SearchBar';
 import { PodcastGrid } from '@/components/podcast/PodcastGrid';
@@ -28,10 +28,13 @@ export default function SearchPage() {
         limit: 20,
         offset: 0,
       });
+    } else if (!queryParam) {
+      // Clear search params when query param is removed
+      setSearchParams(null);
     }
   }, [queryParam]);
 
-  const handleSearch = (term: string) => {
+  const handleSearch = useCallback((term: string) => {
     // Update URL with search query
     router.push(`/search?q=${encodeURIComponent(term)}`);
     
@@ -40,7 +43,7 @@ export default function SearchPage() {
       limit: 20,
       offset: 0,
     });
-  };
+  }, [router]);
 
   return (
     <Container>

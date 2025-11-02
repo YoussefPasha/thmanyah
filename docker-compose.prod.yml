@@ -111,7 +111,6 @@ services:
     environment:
       NODE_ENV: production
       NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
-      NEXT_PUBLIC_APP_NAME: iTunes Podcast Search
     ports:
       - "3000:3000"
     depends_on:

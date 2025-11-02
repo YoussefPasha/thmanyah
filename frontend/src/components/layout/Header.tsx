@@ -4,7 +4,6 @@ import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Music, Search } from 'lucide-react';
-import { APP_NAME } from '@/lib/constants/app.constants';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils/cn';
 
@@ -13,12 +12,12 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-16 items-center">
+      <div className="container mx-auto flex h-16 items-center px-4 sm:px-6 lg:px-8">
         <Link href="/" className="group flex items-center space-x-2 space-x-reverse">
           <div className="rounded-lg bg-primary/10 p-1.5 transition-all group-hover:bg-primary/20">
             <Music className="h-5 w-5 text-primary" />
           </div>
-          <span className="text-lg font-bold">{APP_NAME}</span>
+          <span className="text-lg font-bold">بودكاست iTunes</span>
         </Link>
         <nav className="mr-auto flex items-center space-x-2 space-x-reverse md:space-x-4">
           <Link

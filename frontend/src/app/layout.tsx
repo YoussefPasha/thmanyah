@@ -3,7 +3,6 @@ import localFont from 'next/font/local';
 import './globals.css';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
-import { APP_NAME } from '@/lib/constants/app.constants';
 
 const ibmPlexSansArabic = localFont({
   src: [
@@ -52,7 +51,7 @@ const ibmPlexSansArabic = localFont({
 });
 
 export const metadata: Metadata = {
-  title: APP_NAME,
+  title: "بودكاست iTunes",
   description: 'ابحث واكتشف البودكاست من مكتبة iTunes',
 };
 

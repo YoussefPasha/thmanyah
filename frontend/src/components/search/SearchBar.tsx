@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Search as SearchIcon } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -20,24 +20,39 @@ export function SearchBar({
 }: SearchBarProps) {
   const [searchTerm, setSearchTerm] = useState(defaultValue);
   const debouncedSearchTerm = useDebounce(searchTerm, DEBOUNCE_DELAY);
+  const isInitialMount = useRef(true);
+  const lastSearchedTerm = useRef<string>('');
 
   // Sync with defaultValue when it changes (e.g., from URL)
   useEffect(() => {
-    if (defaultValue) {
-      setSearchTerm(defaultValue);
-    }
+    setSearchTerm(defaultValue);
+    lastSearchedTerm.current = defaultValue;
   }, [defaultValue]);
 
   useEffect(() => {
-    if (debouncedSearchTerm.trim().length >= 2) {
-      onSearch(debouncedSearchTerm.trim());
+    // Skip initial mount to avoid double search on page load
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      if (debouncedSearchTerm.trim().length >= 2) {
+        lastSearchedTerm.current = debouncedSearchTerm.trim();
+      }
+      return;
+    }
+
+    // Only trigger search if term is valid and different from last search
+    const trimmedTerm = debouncedSearchTerm.trim();
+    if (trimmedTerm.length >= 2 && trimmedTerm !== lastSearchedTerm.current) {
+      lastSearchedTerm.current = trimmedTerm;
+      onSearch(trimmedTerm);
     }
   }, [debouncedSearchTerm, onSearch]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (searchTerm.trim().length >= 2) {
-      onSearch(searchTerm.trim());
+    const trimmedTerm = searchTerm.trim();
+    if (trimmedTerm.length >= 2) {
+      lastSearchedTerm.current = trimmedTerm;
+      onSearch(trimmedTerm);
     }
   };
 
