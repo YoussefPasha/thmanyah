@@ -10,6 +10,7 @@ export const podcastApi = {
       limit: params.limit || DEFAULT_LIMIT,
       offset: params.offset || DEFAULT_OFFSET,
       country: params.country,
+      entity: params.entity,
     });
     return response.data;
   },

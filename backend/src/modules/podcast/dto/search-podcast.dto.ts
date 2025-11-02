@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, IsOptional, IsNumber, Min, Max } from 'class-validator';
+import { IsString, IsNotEmpty, IsOptional, IsNumber, Min, Max, IsIn } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class SearchPodcastDto {
@@ -22,5 +22,12 @@ export class SearchPodcastDto {
   @IsOptional()
   @IsString()
   country?: string = 'us';
+
+  @IsOptional()
+  @IsString()
+  @IsIn(['podcast', 'podcastAuthor'], { 
+    message: 'Entity must be either "podcast" or "podcastAuthor"' 
+  })
+  entity?: string = 'podcast';
 }
 

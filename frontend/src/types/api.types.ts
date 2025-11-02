@@ -21,6 +21,7 @@ export interface SearchParams {
   limit?: number;
   offset?: number;
   country?: string;
+  entity?: 'podcast' | 'podcastAuthor';
 }
 
 export enum PodcastSortBy {

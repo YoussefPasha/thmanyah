@@ -62,9 +62,9 @@ export class ITunesService {
   }
 
   async searchPodcasts(params: ITunesSearchParams): Promise<ITunesSearchResponse> {
-    const { term, country = 'us', limit = 20, offset = 0 } = params;
+    const { term, country = 'us', limit = 20, entity = 'podcast', offset = 0 } = params;
 
-    this.logger.debug(`Searching iTunes for podcasts with term: ${term}`);
+    this.logger.debug(`Searching iTunes for podcasts with term: ${term}, country: ${country}, limit: ${limit}, entity: ${entity}`);
 
     // Generate cache key
     const cacheKey = this.generateCacheKey(params);
@@ -79,13 +79,14 @@ export class ITunesService {
     // Apply rate limiting
     await this.applyRateLimit();
 
+    // Note: iTunes API doesn't support 'offset' parameter, only 'limit'
+    // The offset is kept in params for potential client-side filtering
     const searchParams = {
       term,
       country,
       media: 'podcast',
-      entity: 'podcast',
+      entity,
       limit,
-      offset,
     };
 
     const result = await this.executeWithRetry(
@@ -256,7 +257,7 @@ export class ITunesService {
   }
 
   private generateCacheKey(params: ITunesSearchParams): string {
-    return `${params.term}-${params.country || 'us'}-${params.limit || 20}-${params.offset || 0}`;
+    return `${params.term}-${params.country || 'us'}-${params.entity || 'podcast'}-${params.limit || 20}`;
   }
 
   private getFromCache(key: string): ITunesSearchResponse | null {

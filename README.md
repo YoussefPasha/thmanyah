@@ -5,6 +5,9 @@ A full-stack application that integrates with the iTunes Search API to search, s
 ## ✨ Features
 
 - **Podcast Search** - Search for podcasts using the iTunes Search API
+- **Advanced Pagination** - Configurable result limits (1-200), country filtering, and entity type filtering
+- **Multi-Country Search** - Search in different iTunes stores (US, CA, UK, JP, etc.)
+- **Entity Filtering** - Search for podcasts or podcast authors separately
 - **Data Persistence** - Automatically saves search results to PostgreSQL database
 - **Browse Database** - View all stored podcasts on the landing page
 - **Modern UI** - Beautiful, responsive interface with gradient effects and animations
@@ -19,7 +22,7 @@ A full-stack application that integrates with the iTunes Search API to search, s
 - **Animated UX** - Smooth animations and transitions for error states
 - **iTunes API Rate Limiting** - Intelligent rate limit handling with exponential backoff, request caching, and automatic retry logic
 - **Request Throttling** - Proactive rate limiting to prevent hitting iTunes API limits
-- **Response Caching** - In-memory caching reduces redundant API calls and improves performance
+- **Response Caching** - In-memory caching (5-minute TTL) reduces redundant API calls and improves performance
 
 ## 🛠️ Tech Stack
 
@@ -70,7 +73,28 @@ npm run dev           # Runs on http://localhost:3000
 1. **Browse Podcasts** - Visit http://localhost:3000 to see podcasts from the database
 2. **Search from Homepage** - Type in the search box and press Enter
 3. **Direct URL Search** - Access http://localhost:3000/search?q=your-term
-4. **View Details** - Click any podcast card to see more information
+4. **Use Advanced Filters** - On search page, filter by:
+   - **Results Limit**: 20, 50, 100, or 200 results
+   - **Country**: Search in different iTunes stores (US, Saudi Arabia, UAE, Egypt, UK, etc.)
+   - **Entity Type**: Search for podcasts or podcast authors
+5. **Share Search Results** - URL updates with filters, making searches shareable
+6. **View Details** - Click any podcast card to see more information
+
+### Search Examples
+
+```
+# Basic search
+/search?q=javascript
+
+# Custom filters
+/search?q=technology&limit=100&country=us&entity=podcast
+
+# Search in Arabic stores
+/search?q=تكنولوجيا&limit=50&country=sa&entity=podcast
+
+# Search for authors
+/search?q=joe+rogan&entity=podcastAuthor
+```
 
 ## 🔧 Environment Variables
 
@@ -103,17 +127,48 @@ NEXT_PUBLIC_API_URL=http://localhost:3000/api/v1
 
 ## 📡 API Endpoints
 
-- `GET /api/v1/podcasts/search?term={term}` - Search podcasts (with rate limit handling)
-- `GET /api/v1/podcasts` - Get all podcasts
+- `GET /api/v1/podcasts/search?term={term}&limit={limit}&country={country}&entity={entity}` - Search podcasts with pagination
+- `GET /api/v1/podcasts?limit={limit}&offset={offset}` - Get all podcasts with pagination
 - `GET /api/v1/podcasts/{id}` - Get podcast by ID
 - `GET /api/v1/health` - Health check
+
+### Pagination & Search Parameters
+
+**Search Endpoint** supports the following parameters:
+- `term` (required) - Search query
+- `limit` (optional, 1-200, default: 20) - Number of results
+- `country` (optional, default: 'us') - Country store (ISO 3166-1 alpha-2 code)
+- `entity` (optional, default: 'podcast') - Entity type: `podcast` or `podcastAuthor`
+- `offset` (optional, default: 0) - Client-side pagination offset
+
+**Examples:**
+```bash
+# Basic search with 50 results
+GET /api/v1/podcasts/search?term=javascript&limit=50
+
+# Search in Canadian store
+GET /api/v1/podcasts/search?term=hockey&country=ca&limit=100
+
+# Search for podcast authors
+GET /api/v1/podcasts/search?term=joe+rogan&entity=podcastAuthor
+
+# Combined parameters
+GET /api/v1/podcasts/search?term=technology&country=us&entity=podcast&limit=100
+```
+
+📖 **Documentation:**
+- Quick Start: `backend/QUICK_START_PAGINATION.md`
+- Full Guide: `backend/PAGINATION.md`
+- Implementation Details: `IMPLEMENTATION_SUMMARY.md`
+
+⚠️ **Note:** iTunes Search API doesn't support offset-based pagination. Only the `limit` parameter affects iTunes results. Use `offset` for client-side filtering or database queries.
 
 ### Rate Limiting
 The iTunes API integration includes comprehensive rate limit handling:
 - Automatic detection of rate limit responses (302, 429, 503)
 - Exponential backoff retry strategy
-- Request caching to reduce API calls
-- Proactive request throttling
+- Request caching to reduce API calls (5-minute TTL)
+- Proactive request throttling (20 requests/second)
 
 See `backend/ITUNES_RATE_LIMITING.md` for detailed documentation.
 

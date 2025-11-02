@@ -19,17 +19,18 @@ export class PodcastService {
   ) {}
 
   async search(searchDto: SearchPodcastDto): Promise<PodcastListResponseDto> {
-    const { term, limit, offset, country } = searchDto;
+    const { term, limit, offset, country, entity } = searchDto;
     const searchLimit = limit || 20;
     const searchOffset = offset || 0;
 
-    this.logger.debug(`Searching for podcasts with term: ${term}`);
+    this.logger.debug(`Searching for podcasts with term: ${term}, entity: ${entity}`);
 
     try {
       // Fetch from iTunes API
       const itunesResponse = await this.itunesService.searchPodcasts({
         term,
         country,
+        entity,
         limit,
         offset,
       });
@@ -53,11 +54,20 @@ export class PodcastService {
       // Fallback to database search
       const queryBuilder = this.podcastRepository.createQueryBuilder('podcast');
 
-      // Search in trackName, artistName, and description
-      queryBuilder.andWhere(
-        '(LOWER(podcast.trackName) LIKE LOWER(:term) OR LOWER(podcast.artistName) LIKE LOWER(:term) OR LOWER(podcast.description) LIKE LOWER(:term))',
-        { term: `%${term}%` },
-      );
+      // Search based on entity type
+      if (entity === 'podcastAuthor') {
+        // For podcast authors, search primarily in artistName
+        queryBuilder.andWhere(
+          'LOWER(podcast.artistName) LIKE LOWER(:term)',
+          { term: `%${term}%` },
+        );
+      } else {
+        // For podcasts (default), search in trackName, artistName, and description
+        queryBuilder.andWhere(
+          '(LOWER(podcast.trackName) LIKE LOWER(:term) OR LOWER(podcast.artistName) LIKE LOWER(:term) OR LOWER(podcast.description) LIKE LOWER(:term))',
+          { term: `%${term}%` },
+        );
+      }
 
       // Filter by country if provided
       if (country) {
@@ -71,7 +81,7 @@ export class PodcastService {
       // Execute query
       const [podcasts, total] = await queryBuilder.getManyAndCount();
 
-      this.logger.debug(`Found ${total} podcasts from database fallback`);
+      this.logger.debug(`Found ${total} podcasts from database fallback (entity: ${entity})`);
 
       return {
         podcasts: podcasts.map((podcast: Podcast) => PodcastResponseDto.fromEntity(podcast)),

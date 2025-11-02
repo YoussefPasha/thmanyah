@@ -94,7 +94,7 @@ describe('ITunesService', () => {
           media: 'podcast',
           entity: 'podcast',
           limit: 20,
-          offset: 0,
+          // Note: offset is NOT sent to iTunes API (not supported)
         },
       });
     });
@@ -117,6 +117,84 @@ describe('ITunesService', () => {
 
       await service.searchPodcasts(mockSearchParams);
       await service.searchPodcasts({ ...mockSearchParams, term: 'different' });
+
+      expect(mockAxiosInstance.get).toHaveBeenCalledTimes(2);
+    });
+
+    it('should search with custom entity parameter', async () => {
+      mockAxiosInstance.get.mockResolvedValue(mockResponse);
+
+      const result = await service.searchPodcasts({
+        ...mockSearchParams,
+        entity: 'podcastAuthor',
+      });
+
+      expect(result).toEqual(mockResponse.data);
+      expect(mockAxiosInstance.get).toHaveBeenCalledWith('/search', {
+        params: {
+          term: 'test podcast',
+          country: 'us',
+          media: 'podcast',
+          entity: 'podcastAuthor',
+          limit: 20,
+        },
+      });
+    });
+
+    it('should search with custom limit parameter', async () => {
+      mockAxiosInstance.get.mockResolvedValue(mockResponse);
+
+      const result = await service.searchPodcasts({
+        ...mockSearchParams,
+        limit: 50,
+      });
+
+      expect(result).toEqual(mockResponse.data);
+      expect(mockAxiosInstance.get).toHaveBeenCalledWith('/search', {
+        params: {
+          term: 'test podcast',
+          country: 'us',
+          media: 'podcast',
+          entity: 'podcast',
+          limit: 50,
+        },
+      });
+    });
+
+    it('should search in different country store', async () => {
+      mockAxiosInstance.get.mockResolvedValue(mockResponse);
+
+      const result = await service.searchPodcasts({
+        ...mockSearchParams,
+        country: 'ca',
+      });
+
+      expect(result).toEqual(mockResponse.data);
+      expect(mockAxiosInstance.get).toHaveBeenCalledWith('/search', {
+        params: {
+          term: 'test podcast',
+          country: 'ca',
+          media: 'podcast',
+          entity: 'podcast',
+          limit: 20,
+        },
+      });
+    });
+
+    it('should not use cache for different entity types', async () => {
+      mockAxiosInstance.get.mockResolvedValue(mockResponse);
+
+      await service.searchPodcasts({ ...mockSearchParams, entity: 'podcast' });
+      await service.searchPodcasts({ ...mockSearchParams, entity: 'podcastAuthor' });
+
+      expect(mockAxiosInstance.get).toHaveBeenCalledTimes(2);
+    });
+
+    it('should not use cache for different limit values', async () => {
+      mockAxiosInstance.get.mockResolvedValue(mockResponse);
+
+      await service.searchPodcasts({ ...mockSearchParams, limit: 20 });
+      await service.searchPodcasts({ ...mockSearchParams, limit: 50 });
 
       expect(mockAxiosInstance.get).toHaveBeenCalledTimes(2);
     });
@@ -404,7 +482,7 @@ describe('ITunesService', () => {
           media: 'podcast',
           entity: 'podcast',
           limit: 20,
-          offset: 0,
+          // Note: offset is NOT sent to iTunes API (not supported)
         },
       });
     });

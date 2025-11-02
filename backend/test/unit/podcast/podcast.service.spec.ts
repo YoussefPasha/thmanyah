@@ -10,12 +10,21 @@ describe('PodcastService', () => {
   let repository: Repository<Podcast>;
   let itunesService: ITunesService;
 
+  const mockQueryBuilder = {
+    andWhere: jest.fn().mockReturnThis(),
+    orderBy: jest.fn().mockReturnThis(),
+    skip: jest.fn().mockReturnThis(),
+    take: jest.fn().mockReturnThis(),
+    getManyAndCount: jest.fn(),
+  };
+
   const mockRepository = {
     find: jest.fn(),
     findOne: jest.fn(),
     findAndCount: jest.fn(),
     create: jest.fn(),
     save: jest.fn(),
+    createQueryBuilder: jest.fn().mockReturnValue(mockQueryBuilder),
   };
 
   const mockITunesService = {
@@ -47,6 +56,10 @@ describe('PodcastService', () => {
   });
 
   describe('search', () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
     it('should search and return podcasts', async () => {
       const mockSearchResult = {
         resultCount: 1,
@@ -78,6 +91,104 @@ describe('PodcastService', () => {
       expect(result).toBeDefined();
       expect(result.podcasts).toBeDefined();
       expect(itunesService.searchPodcasts).toHaveBeenCalled();
+    });
+
+    it('should fallback to database search when iTunes API fails - podcast entity', async () => {
+      mockITunesService.searchPodcasts.mockRejectedValue(new Error('iTunes API failed'));
+      
+      const mockPodcasts = [
+        {
+          id: 1,
+          trackId: 123,
+          trackName: 'Test Podcast',
+          artistName: 'Test Artist',
+          country: 'US',
+        },
+      ];
+      
+      mockQueryBuilder.getManyAndCount.mockResolvedValue([mockPodcasts, 1]);
+
+      const result = await service.search({
+        term: 'test',
+        limit: 20,
+        offset: 0,
+        entity: 'podcast',
+      });
+
+      expect(result).toBeDefined();
+      expect(result.podcasts).toHaveLength(1);
+      expect(result.total).toBe(1);
+      expect(mockRepository.createQueryBuilder).toHaveBeenCalledWith('podcast');
+      
+      // Verify it searches in trackName, artistName, and description for podcast entity
+      expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith(
+        '(LOWER(podcast.trackName) LIKE LOWER(:term) OR LOWER(podcast.artistName) LIKE LOWER(:term) OR LOWER(podcast.description) LIKE LOWER(:term))',
+        { term: '%test%' },
+      );
+    });
+
+    it('should fallback to database search when iTunes API fails - podcastAuthor entity', async () => {
+      mockITunesService.searchPodcasts.mockRejectedValue(new Error('iTunes API failed'));
+      
+      const mockPodcasts = [
+        {
+          id: 1,
+          trackId: 123,
+          trackName: 'Test Podcast',
+          artistName: 'Test Author',
+          country: 'US',
+        },
+      ];
+      
+      mockQueryBuilder.getManyAndCount.mockResolvedValue([mockPodcasts, 1]);
+
+      const result = await service.search({
+        term: 'author',
+        limit: 20,
+        offset: 0,
+        entity: 'podcastAuthor',
+      });
+
+      expect(result).toBeDefined();
+      expect(result.podcasts).toHaveLength(1);
+      expect(result.total).toBe(1);
+      expect(mockRepository.createQueryBuilder).toHaveBeenCalledWith('podcast');
+      
+      // Verify it searches only in artistName for podcastAuthor entity
+      expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith(
+        'LOWER(podcast.artistName) LIKE LOWER(:term)',
+        { term: '%author%' },
+      );
+    });
+
+    it('should apply country filter in database fallback', async () => {
+      mockITunesService.searchPodcasts.mockRejectedValue(new Error('iTunes API failed'));
+      
+      const mockPodcasts = [
+        {
+          id: 1,
+          trackId: 123,
+          trackName: 'Test Podcast',
+          artistName: 'Test Artist',
+          country: 'CA',
+        },
+      ];
+      
+      mockQueryBuilder.getManyAndCount.mockResolvedValue([mockPodcasts, 1]);
+
+      await service.search({
+        term: 'test',
+        limit: 20,
+        offset: 0,
+        country: 'ca',
+        entity: 'podcast',
+      });
+
+      // Verify country filter is applied
+      expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith(
+        'podcast.country = :country',
+        { country: 'ca' },
+      );
     });
   });
 
