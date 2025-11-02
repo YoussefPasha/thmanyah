@@ -1,6 +1,7 @@
 import { Module, MiddlewareConsumer, NestModule } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ThrottlerModule } from '@nestjs/throttler';
+import { ScheduleModule } from '@nestjs/schedule';
 import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 
 // Configuration
@@ -31,6 +32,7 @@ import { LoggerMiddleware } from './common/middleware/logger.middleware';
         limit: parseInt(process.env.RATE_LIMIT_MAX || '100', 10),
       },
     ]),
+    ScheduleModule.forRoot(),
     DatabaseModule,
     PodcastModule,
     ITunesModule,

@@ -1,12 +1,13 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, SelectQueryBuilder } from 'typeorm';
+import { Repository, SelectQueryBuilder, In } from 'typeorm';
 import { Podcast } from './entities/podcast.entity';
 import { ITunesService } from '../itunes/itunes.service';
 import { SearchPodcastDto } from './dto/search-podcast.dto';
 import { FilterPodcastDto } from './dto/filter-podcast.dto';
 import { PodcastResponseDto, PodcastListResponseDto } from './dto/podcast-response.dto';
 import { ITunesPodcast } from './interfaces/itunes-response.interface';
+import { PodcastQueueService } from './podcast-queue.service';
 
 @Injectable()
 export class PodcastService {
@@ -16,6 +17,7 @@ export class PodcastService {
     @InjectRepository(Podcast)
     private podcastRepository: Repository<Podcast>,
     private itunesService: ITunesService,
+    private podcastQueueService: PodcastQueueService,
   ) {}
 
   async search(searchDto: SearchPodcastDto): Promise<PodcastListResponseDto> {
@@ -37,11 +39,14 @@ export class PodcastService {
 
       this.logger.debug(`Found ${itunesResponse.resultCount} podcasts from iTunes`);
 
-      // Save or update podcasts in database
-      const podcasts = await this.savePodcasts(itunesResponse.results);
+      // Queue new podcasts for background processing
+      await this.queueNewPodcasts(itunesResponse.results);
 
+      // Return iTunes results immediately (without waiting for database save)
       return {
-        podcasts: podcasts.map((podcast) => PodcastResponseDto.fromEntity(podcast)),
+        podcasts: itunesResponse.results.map((podcast) => 
+          this.mapITunesPodcastToResponseDto(podcast)
+        ),
         total: itunesResponse.resultCount,
         limit: searchLimit,
         offset: searchOffset,
@@ -284,6 +289,77 @@ export class PodcastService {
         itunesPodcast.trackExplicitness === 'explicit' ||
         itunesPodcast.collectionExplicitness === 'explicit',
       description: itunesPodcast.collectionName || '',
+    };
+  }
+
+  /**
+   * Queue new podcasts for background processing
+   * Only queues podcasts that don't already exist in database or job queue
+   */
+  private async queueNewPodcasts(itunesPodcasts: ITunesPodcast[]): Promise<void> {
+    if (itunesPodcasts.length === 0) {
+      return;
+    }
+
+    try {
+      const trackIds = itunesPodcasts.map((p) => p.trackId);
+
+      // Check which podcasts already exist in database
+      const existingPodcasts = await this.podcastRepository.find({
+        where: { trackId: In(trackIds) },
+        select: ['trackId'],
+      });
+      const existingTrackIds = new Set(existingPodcasts.map((p) => p.trackId));
+
+      // Check which podcasts already have jobs queued
+      const queuedTrackIds = await this.podcastQueueService.getExistingJobTrackIds(trackIds);
+      const queuedTrackIdsSet = new Set(queuedTrackIds);
+
+      // Filter to only new podcasts (not in database and not already queued)
+      const newPodcasts = itunesPodcasts.filter(
+        (podcast) =>
+          !existingTrackIds.has(podcast.trackId) &&
+          !queuedTrackIdsSet.has(podcast.trackId),
+      );
+
+      if (newPodcasts.length > 0) {
+        await this.podcastQueueService.addJobs(newPodcasts);
+        this.logger.debug(`Queued ${newPodcasts.length} new podcasts for processing`);
+      } else {
+        this.logger.debug('No new podcasts to queue');
+      }
+    } catch (error) {
+      this.logger.error(`Failed to queue podcasts: ${error.message}`, error.stack);
+    }
+  }
+
+  /**
+   * Map iTunes podcast data to response DTO
+   */
+  private mapITunesPodcastToResponseDto(itunesPodcast: ITunesPodcast): PodcastResponseDto {
+    return {
+      id: itunesPodcast.trackId, // Use trackId as temporary id for iTunes results
+      trackId: itunesPodcast.trackId,
+      trackName: itunesPodcast.trackName,
+      artistName: itunesPodcast.artistName || '',
+      collectionName: itunesPodcast.collectionName || '',
+      artworkUrl60: itunesPodcast.artworkUrl60 || '',
+      artworkUrl100: itunesPodcast.artworkUrl100 || '',
+      artworkUrl600: itunesPodcast.artworkUrl600 || '',
+      feedUrl: itunesPodcast.feedUrl || '',
+      trackViewUrl: itunesPodcast.trackViewUrl || '',
+      releaseDate: itunesPodcast.releaseDate ? new Date(itunesPodcast.releaseDate) : (null as any),
+      country: itunesPodcast.country,
+      primaryGenreName: itunesPodcast.primaryGenreName,
+      genreIds: itunesPodcast.genreIds || [],
+      genres: itunesPodcast.genres || [],
+      trackCount: itunesPodcast.trackCount || 0,
+      trackExplicitContent:
+        itunesPodcast.trackExplicitness === 'explicit' ||
+        itunesPodcast.collectionExplicitness === 'explicit',
+      description: itunesPodcast.collectionName || '',
+      createdAt: new Date(),
+      updatedAt: new Date(),
     };
   }
 }
