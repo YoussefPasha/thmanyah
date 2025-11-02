@@ -73,6 +73,8 @@ export class PodcastService {
       search,
       minTrackCount,
       maxTrackCount,
+      releaseDateFrom,
+      releaseDateTo,
     } = filterDto;
 
     this.logger.debug(`Finding podcasts with filters: ${JSON.stringify(filterDto)}`);
@@ -107,6 +109,14 @@ export class PodcastService {
 
     if (maxTrackCount !== undefined) {
       queryBuilder.andWhere('podcast.trackCount <= :maxTrackCount', { maxTrackCount });
+    }
+
+    if (releaseDateFrom) {
+      queryBuilder.andWhere('podcast.releaseDate >= :releaseDateFrom', { releaseDateFrom });
+    }
+
+    if (releaseDateTo) {
+      queryBuilder.andWhere('podcast.releaseDate <= :releaseDateTo', { releaseDateTo });
     }
 
     // Apply sorting

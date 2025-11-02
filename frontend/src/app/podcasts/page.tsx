@@ -21,6 +21,8 @@ interface PageProps {
     sortBy?: string;
     sortOrder?: string;
     explicitContent?: string;
+    releaseDateFrom?: string;
+    releaseDateTo?: string;
   };
 }
 
@@ -40,6 +42,8 @@ export default async function PodcastsPage({ searchParams }: PageProps) {
     sortBy: (searchParams.sortBy as PodcastSortBy) || PodcastSortBy.CREATED_AT,
     sortOrder: (searchParams.sortOrder as SortOrder) || SortOrder.DESC,
     explicitContent: searchParams.explicitContent === 'true' ? true : undefined,
+    releaseDateFrom: searchParams.releaseDateFrom || undefined,
+    releaseDateTo: searchParams.releaseDateTo || undefined,
   };
 
   let podcasts: Podcast[] = [];
@@ -73,17 +77,15 @@ export default async function PodcastsPage({ searchParams }: PageProps) {
     <div className="min-h-screen bg-muted/30">
       {/* Header Section */}
       <section className="border-b bg-background">
-        <Container className="py-8 md:py-12">
-          <div className="flex items-center justify-between">
-            <div className="space-y-2">
-              <div className="flex items-center gap-3">
-                <div className="rounded-lg bg-primary/10 p-2">
-                  <Music className="h-6 w-6 text-primary" />
-                </div>
-                <h1 className="text-3xl font-bold md:text-4xl">جميع البودكاست</h1>
-              </div>
-              <p className="text-muted-foreground">
-                استكشف مكتبتنا الكاملة من البودكاست مع فلاتر وخيارات ترتيب قوية
+        <Container className="py-4 md:py-6">
+          <div className="flex items-center gap-3">
+            <div className="rounded-lg bg-primary/10 p-2">
+              <Music className="h-5 w-5 text-primary md:h-6 md:w-6" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold md:text-3xl">جميع البودكاست</h1>
+              <p className="text-sm text-muted-foreground">
+                استكشف مكتبتنا الكاملة من البودكاست
               </p>
             </div>
           </div>
@@ -91,8 +93,8 @@ export default async function PodcastsPage({ searchParams }: PageProps) {
       </section>
 
       {/* Main Content */}
-      <Container className="py-8 md:py-12">
-        <div className="space-y-8">
+      <Container className="py-4 md:py-6">
+        <div className="space-y-4">
           {/* Client-side component for filters */}
           <PodcastsClient
             initialGenres={genres}
@@ -104,18 +106,20 @@ export default async function PodcastsPage({ searchParams }: PageProps) {
               sortBy: searchParams.sortBy as PodcastSortBy,
               sortOrder: searchParams.sortOrder as SortOrder,
               explicitContent: searchParams.explicitContent === 'true' ? true : undefined,
+              releaseDateFrom: searchParams.releaseDateFrom,
+              releaseDateTo: searchParams.releaseDateTo,
             }}
           />
 
           {/* Results Summary */}
-          {!hasError && (
-            <div className="flex items-center justify-between text-sm text-muted-foreground">
+          {!hasError && total > 0 && (
+            <div className="flex items-center justify-between text-xs text-muted-foreground md:text-sm">
               <p>
-                عرض {Math.min(offset + 1, total)} - {Math.min(offset + ITEMS_PER_PAGE, total)} من {total} بودكاست
+                {Math.min(offset + 1, total)} - {Math.min(offset + ITEMS_PER_PAGE, total)} من {total}
               </p>
               {totalPages > 1 && (
                 <p>
-                  صفحة {page} من {totalPages}
+                  صفحة {page} / {totalPages}
                 </p>
               )}
             </div>
@@ -124,12 +128,12 @@ export default async function PodcastsPage({ searchParams }: PageProps) {
           {/* Error State */}
           {hasError && (
             <Card className="border-2 border-destructive/50">
-              <CardContent className="flex flex-col items-center justify-center py-16 text-center">
-                <h3 className="mb-2 text-xl font-semibold">فشل تحميل البودكاست</h3>
-                <p className="mb-6 text-muted-foreground">
+              <CardContent className="flex flex-col items-center justify-center py-12 text-center">
+                <h3 className="mb-2 text-lg font-semibold">فشل تحميل البودكاست</h3>
+                <p className="mb-4 text-sm text-muted-foreground">
                   حدث خطأ أثناء تحميل البودكاست. يرجى المحاولة مرة أخرى لاحقًا.
                 </p>
-                <Button asChild>
+                <Button asChild size="sm">
                   <Link href="/podcasts">حاول مرة أخرى</Link>
                 </Button>
               </CardContent>
@@ -139,15 +143,15 @@ export default async function PodcastsPage({ searchParams }: PageProps) {
           {/* Empty State */}
           {!hasError && podcasts.length === 0 && (
             <Card className="border-2 border-dashed">
-              <CardContent className="flex flex-col items-center justify-center py-16 text-center">
-                <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-muted">
-                  <Music className="h-10 w-10 text-muted-foreground" />
+              <CardContent className="flex flex-col items-center justify-center py-12 text-center">
+                <div className="mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-muted">
+                  <Music className="h-8 w-8 text-muted-foreground" />
                 </div>
-                <h3 className="mb-2 text-xl font-semibold">لم يتم العثور على بودكاست</h3>
-                <p className="mb-6 text-muted-foreground">
+                <h3 className="mb-2 text-lg font-semibold">لم يتم العثور على بودكاست</h3>
+                <p className="mb-4 text-sm text-muted-foreground">
                   جرب تغيير الفلاتر أو إعادة تعيينها للعثور على المزيد من البودكاست
                 </p>
-                <Button asChild variant="outline">
+                <Button asChild variant="outline" size="sm">
                   <Link href="/podcasts">إعادة تعيين الفلاتر</Link>
                 </Button>
               </CardContent>

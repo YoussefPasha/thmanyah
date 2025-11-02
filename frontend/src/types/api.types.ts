@@ -46,5 +46,7 @@ export interface FilterParams {
   search?: string;
   minTrackCount?: number;
   maxTrackCount?: number;
+  releaseDateFrom?: string;
+  releaseDateTo?: string;
 }
 

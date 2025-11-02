@@ -15,6 +15,8 @@ interface PodcastsClientProps {
     sortBy?: PodcastSortBy;
     sortOrder?: SortOrder;
     explicitContent?: boolean;
+    releaseDateFrom?: string;
+    releaseDateTo?: string;
   };
 }
 
@@ -38,6 +40,8 @@ export function PodcastsClient({
       if (filters.sortBy) params.set('sortBy', filters.sortBy);
       if (filters.sortOrder) params.set('sortOrder', filters.sortOrder);
       if (filters.explicitContent) params.set('explicitContent', 'true');
+      if (filters.releaseDateFrom) params.set('releaseDateFrom', filters.releaseDateFrom);
+      if (filters.releaseDateTo) params.set('releaseDateTo', filters.releaseDateTo);
 
       // Reset to page 1 when filters change
       params.set('page', '1');

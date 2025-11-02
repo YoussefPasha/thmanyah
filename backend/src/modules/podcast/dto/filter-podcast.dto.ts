@@ -64,5 +64,13 @@ export class FilterPodcastDto {
   @IsNumber()
   @Min(0)
   maxTrackCount?: number;
+
+  @IsOptional()
+  @Type(() => Date)
+  releaseDateFrom?: Date;
+
+  @IsOptional()
+  @Type(() => Date)
+  releaseDateTo?: Date;
 }
 
