@@ -27,7 +27,8 @@ A full-stack application that integrates with the iTunes Search API to search, s
 ## 🛠️ Tech Stack
 
 **Backend:** NestJS, TypeORM, PostgreSQL, Axios  
-**Frontend:** Next.js 14, TypeScript, Tailwind CSS, SWR, Radix UI, Lucide Icons
+**Frontend:** Next.js 14, TypeScript, Tailwind CSS, SWR, Radix UI, Lucide Icons  
+**Database:** PostgreSQL with TypeORM migrations for schema management
 
 ## 🚀 How to Run
 
@@ -56,6 +57,7 @@ A full-stack application that integrates with the iTunes Search API to search, s
 cd backend
 npm install
 cp .env.example .env  # Configure your environment variables
+npm run migration:run # Run database migrations
 npm run start:dev     # Runs on http://localhost:8080
 ```
 
@@ -106,6 +108,8 @@ DB_PORT=5432
 DB_NAME=itunes_podcasts_dev
 DB_USER=postgres
 DB_PASSWORD=postgres
+DB_SYNCHRONIZE=false  # Use migrations instead (REQUIRED for production)
+DB_MIGRATIONS_RUN=false  # Set to true to auto-run migrations on startup
 
 # CORS
 CORS_ORIGIN=http://localhost:3000
@@ -160,6 +164,8 @@ GET /api/v1/podcasts/search?term=technology&country=us&entity=podcast&limit=100
 - Quick Start: `backend/QUICK_START_PAGINATION.md`
 - Full Guide: `backend/PAGINATION.md`
 - Implementation Details: `IMPLEMENTATION_SUMMARY.md`
+- Database Migrations: `backend/MIGRATIONS.md`
+- Production Deployment: `backend/PRODUCTION-DEPLOYMENT.md`
 
 ⚠️ **Note:** iTunes Search API doesn't support offset-based pagination. Only the `limit` parameter affects iTunes results. Use `offset` for client-side filtering or database queries.
 
@@ -206,4 +212,37 @@ See `frontend/ERROR_HANDLING.md` for detailed documentation on:
 - API error handling
 - Animation classes
 - Best practices
+
+## 🗄️ Database Management
+
+This application uses TypeORM migrations for database schema management.
+
+### Running Migrations
+
+```bash
+cd backend
+
+# Run all pending migrations
+npm run migration:run
+
+# Show migration status
+npm run migration:show
+
+# Revert last migration
+npm run migration:revert
+```
+
+### Production Deployment
+
+⚠️ **IMPORTANT**: Never use `DB_SYNCHRONIZE=true` in production!
+
+For production deployments:
+1. Set `DB_SYNCHRONIZE=false` in environment variables
+2. Run migrations manually before starting the application
+3. Use the provided scripts for Docker deployments
+
+See detailed guides:
+- `backend/MIGRATIONS.md` - Complete migration documentation
+- `backend/PRODUCTION-DEPLOYMENT.md` - Production deployment guide
+- `how-to-start.md` - Step-by-step setup instructions
 
