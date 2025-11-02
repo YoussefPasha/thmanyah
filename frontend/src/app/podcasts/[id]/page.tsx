@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Container } from '@/components/layout/Container';
 import { PodcastDetails } from '@/components/podcast/PodcastDetails';
@@ -28,11 +28,11 @@ export default async function PodcastPage({ params }: PodcastPageProps) {
 
   return (
     <Container>
-      <div className="space-y-6">
+      <div className="space-y-6 mt-4">
         <Button variant="ghost" asChild>
-          <Link href="/search" className="flex items-center gap-2">
-            <ArrowLeft className="h-4 w-4" />
-            العودة إلى البحث
+          <Link href="/podcasts" className="flex items-center gap-2">
+            <ArrowRight className="h-4 w-4" />
+            العودة إلى البودكاست
           </Link>
         </Button>
         <PodcastDetails podcast={podcast} />

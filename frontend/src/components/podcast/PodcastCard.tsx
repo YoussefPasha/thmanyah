@@ -13,7 +13,7 @@ interface PodcastCardProps {
 
 export function PodcastCard({ podcast }: PodcastCardProps) {
   return (
-    <Link href={`/podcast/${podcast.id}`}>
+    <Link href={`/podcasts/${podcast.id}`}>
       <Card className="group h-full overflow-hidden transition-all hover:shadow-lg">
         <div className="relative aspect-square overflow-hidden bg-muted">
           {podcast.artworkUrl600 ? (

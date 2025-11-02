@@ -1,14 +1,13 @@
 import { Container } from '@/components/layout/Container';
 import { PodcastGrid } from '@/components/podcast/PodcastGrid';
-import { PodcastFilters } from '@/components/podcast/PodcastFilters';
-import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import { podcastApi } from '@/lib/api/podcast.api';
-import { Music, ChevronRight, ChevronLeft } from 'lucide-react';
-import Link from 'next/link';
-import type { Podcast } from '@/types/podcast.types';
-import { PodcastsClient } from './PodcastsClient';
 import { PodcastSortBy, SortOrder, type FilterParams } from '@/types/api.types';
+import type { Podcast } from '@/types/podcast.types';
+import { ChevronLeft, ChevronRight, Music } from 'lucide-react';
+import Link from 'next/link';
+import { PodcastsClient } from './PodcastsClient';
 
 export const revalidate = 60; // Revalidate every 60 seconds
 
