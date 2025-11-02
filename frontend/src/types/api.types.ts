@@ -9,6 +9,7 @@ export interface ApiError {
   error: {
     code: string;
     message: string;
+    statusCode?: number;
     details?: any;
   };
   timestamp: string;

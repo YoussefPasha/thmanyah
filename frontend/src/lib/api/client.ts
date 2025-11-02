@@ -67,8 +67,61 @@ class ApiClient {
       const data = await response.json();
 
       if (!response.ok) {
-        // Server responded with error
-        const apiError: ApiError = data;
+        // Handle specific HTTP error codes
+        const statusCode = response.status;
+        let errorMessage = data.message || 'An error occurred';
+        let errorCode = data.error?.code || `HTTP_${statusCode}`;
+
+        switch (statusCode) {
+          case 429:
+            errorMessage = 'Rate limit exceeded. Please wait a moment before trying again.';
+            errorCode = 'RATE_LIMIT_ERROR';
+            break;
+          case 500:
+            errorMessage = 'Internal server error. Please try again later.';
+            errorCode = 'SERVER_ERROR';
+            break;
+          case 502:
+            errorMessage = 'Bad gateway. The server is temporarily unavailable.';
+            errorCode = 'BAD_GATEWAY';
+            break;
+          case 503:
+            errorMessage = 'Service unavailable. Please try again later.';
+            errorCode = 'SERVICE_UNAVAILABLE';
+            break;
+          case 504:
+            errorMessage = 'Gateway timeout. The request took too long.';
+            errorCode = 'GATEWAY_TIMEOUT';
+            break;
+          case 404:
+            errorMessage = data.message || 'Resource not found.';
+            errorCode = 'NOT_FOUND';
+            break;
+          case 403:
+            errorMessage = 'Forbidden. You do not have permission to access this resource.';
+            errorCode = 'FORBIDDEN';
+            break;
+          case 401:
+            errorMessage = 'Unauthorized. Please login to continue.';
+            errorCode = 'UNAUTHORIZED';
+            break;
+          case 400:
+            errorMessage = data.message || 'Bad request. Please check your input.';
+            errorCode = 'BAD_REQUEST';
+            break;
+        }
+
+        // Create enhanced error with status code
+        const apiError: ApiError = {
+          success: false,
+          error: {
+            code: errorCode,
+            message: errorMessage,
+            statusCode: statusCode,
+          },
+          timestamp: data.timestamp || new Date().toISOString(),
+        };
+        
         return Promise.reject(apiError);
       }
 
@@ -83,6 +136,7 @@ class ApiClient {
           error: {
             code: 'TIMEOUT_ERROR',
             message: 'Request timeout. Please try again.',
+            statusCode: 504,
           },
           timestamp: new Date().toISOString(),
         });
@@ -93,6 +147,7 @@ class ApiClient {
           error: {
             code: 'NETWORK_ERROR',
             message: 'Unable to reach the server. Please check your connection.',
+            statusCode: 0,
           },
           timestamp: new Date().toISOString(),
         });
@@ -106,6 +161,7 @@ class ApiClient {
           error: {
             code: 'UNKNOWN_ERROR',
             message: error.message || 'An unexpected error occurred',
+            statusCode: 0,
           },
           timestamp: new Date().toISOString(),
         });

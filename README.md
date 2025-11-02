@@ -14,6 +14,9 @@ A full-stack application that integrates with the iTunes Search API to search, s
 - **Loading States** - Skeleton loaders for better user experience
 - **Responsive Design** - Fully responsive across mobile, tablet, and desktop
 - **Docker Support** - Fully containerized with Docker Compose
+- **Comprehensive Error Handling** - Beautiful error pages with custom SVG illustrations for 404, 500, 429 (rate limiting), and more
+- **Error Recovery** - Automatic error detection with retry functionality
+- **Animated UX** - Smooth animations and transitions for error states
 
 ## 🛠️ Tech Stack
 
@@ -89,4 +92,39 @@ NEXT_PUBLIC_API_URL=http://localhost:3000/api/v1
 - `GET /api/v1/podcasts` - Get all podcasts
 - `GET /api/v1/podcasts/{id}` - Get podcast by ID
 - `GET /api/v1/health` - Health check
+
+## 🎨 Error Handling
+
+This application features a comprehensive error handling system with beautiful, animated error pages:
+
+### Error Pages
+- **404 Not Found** - Custom page with animated SVG and helpful navigation
+- **500 Server Error** - Displays server errors with automatic error type detection
+- **429 Rate Limit** - Special handling for rate limiting with helpful tips
+- **Network Errors** - Graceful handling of connection issues
+- **Global Error** - Last resort error boundary for critical failures
+
+### Features
+- **Custom SVG Illustrations** - Unique, hand-crafted SVG for each error type
+- **CSS Animations** - Float, pulse, shake, and fade-in effects
+- **Arabic Localization** - All error messages in Arabic
+- **Error Type Detection** - Automatically detects and displays appropriate error UI
+- **Retry Functionality** - Built-in retry buttons for recoverable errors
+- **Developer Mode** - Technical details visible in development environment
+- **Reusable Components** - ErrorDisplay component for inline error states
+
+### Testing Errors
+Visit the error test page to see all error states:
+```
+http://localhost:3000/test-errors
+```
+
+### Documentation
+See `frontend/ERROR_HANDLING.md` for detailed documentation on:
+- Error page components
+- ErrorDisplay component usage
+- Error utility functions
+- API error handling
+- Animation classes
+- Best practices
 
