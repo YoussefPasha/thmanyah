@@ -20,28 +20,66 @@ export class PodcastService {
 
   async search(searchDto: SearchPodcastDto): Promise<PodcastListResponseDto> {
     const { term, limit, offset, country } = searchDto;
+    const searchLimit = limit || 20;
+    const searchOffset = offset || 0;
 
     this.logger.debug(`Searching for podcasts with term: ${term}`);
 
-    // Fetch from iTunes API
-    const itunesResponse = await this.itunesService.searchPodcasts({
-      term,
-      country,
-      limit,
-      offset,
-    });
+    try {
+      // Fetch from iTunes API
+      const itunesResponse = await this.itunesService.searchPodcasts({
+        term,
+        country,
+        limit,
+        offset,
+      });
 
-    this.logger.debug(`Found ${itunesResponse.resultCount} podcasts from iTunes`);
+      this.logger.debug(`Found ${itunesResponse.resultCount} podcasts from iTunes`);
 
-    // Save or update podcasts in database
-    const podcasts = await this.savePodcasts(itunesResponse.results);
+      // Save or update podcasts in database
+      const podcasts = await this.savePodcasts(itunesResponse.results);
 
-    return {
-      podcasts: podcasts.map((podcast) => PodcastResponseDto.fromEntity(podcast)),
-      total: itunesResponse.resultCount,
-      limit: limit || 20,
-      offset: offset || 0,
-    };
+      return {
+        podcasts: podcasts.map((podcast) => PodcastResponseDto.fromEntity(podcast)),
+        total: itunesResponse.resultCount,
+        limit: searchLimit,
+        offset: searchOffset,
+      };
+    } catch (error) {
+      this.logger.warn(
+        `iTunes API search failed, falling back to database search: ${error.message}`,
+      );
+
+      // Fallback to database search
+      const queryBuilder = this.podcastRepository.createQueryBuilder('podcast');
+
+      // Search in trackName, artistName, and description
+      queryBuilder.andWhere(
+        '(LOWER(podcast.trackName) LIKE LOWER(:term) OR LOWER(podcast.artistName) LIKE LOWER(:term) OR LOWER(podcast.description) LIKE LOWER(:term))',
+        { term: `%${term}%` },
+      );
+
+      // Filter by country if provided
+      if (country) {
+        queryBuilder.andWhere('podcast.country = :country', { country });
+      }
+
+      // Apply sorting and pagination
+      queryBuilder.orderBy('podcast.createdAt', 'DESC');
+      queryBuilder.skip(searchOffset).take(searchLimit);
+
+      // Execute query
+      const [podcasts, total] = await queryBuilder.getManyAndCount();
+
+      this.logger.debug(`Found ${total} podcasts from database fallback`);
+
+      return {
+        podcasts: podcasts.map((podcast: Podcast) => PodcastResponseDto.fromEntity(podcast)),
+        total,
+        limit: searchLimit,
+        offset: searchOffset,
+      };
+    }
   }
 
   async findAll(limit: number = 20, offset: number = 0): Promise<PodcastListResponseDto> {
