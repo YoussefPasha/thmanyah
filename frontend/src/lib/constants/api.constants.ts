@@ -10,6 +10,9 @@ export const API_BASE_URL = typeof window === 'undefined' ? SERVER_API_URL : CLI
 export const API_ENDPOINTS = {
   PODCASTS: '/podcasts',
   PODCAST_SEARCH: '/podcasts/search',
+  PODCAST_FILTER: '/podcasts/filter',
+  PODCAST_GENRES: '/podcasts/genres',
+  PODCAST_COUNTRIES: '/podcasts/countries',
   PODCAST_BY_ID: (id: number) => `/podcasts/${id}`,
   HEALTH: '/health',
 } as const;

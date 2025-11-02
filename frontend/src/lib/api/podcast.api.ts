@@ -1,7 +1,7 @@
 import { apiClient } from './client';
 import { API_ENDPOINTS, DEFAULT_LIMIT, DEFAULT_OFFSET } from '../constants/api.constants';
 import type { Podcast, PodcastListResponse } from '@/types/podcast.types';
-import type { SearchParams } from '@/types/api.types';
+import type { SearchParams, FilterParams } from '@/types/api.types';
 
 export const podcastApi = {
   search: async (params: SearchParams): Promise<PodcastListResponse> => {
@@ -20,6 +20,21 @@ export const podcastApi = {
       offset,
     });
     return response.data;
+  },
+
+  filter: async (params: FilterParams): Promise<PodcastListResponse> => {
+    const response = await apiClient.get<PodcastListResponse>(API_ENDPOINTS.PODCAST_FILTER, params);
+    return response.data;
+  },
+
+  getGenres: async (): Promise<string[]> => {
+    const response = await apiClient.get<{ genres: string[] }>(API_ENDPOINTS.PODCAST_GENRES);
+    return response.data.genres;
+  },
+
+  getCountries: async (): Promise<string[]> => {
+    const response = await apiClient.get<{ countries: string[] }>(API_ENDPOINTS.PODCAST_COUNTRIES);
+    return response.data.countries;
   },
 
   getById: async (id: number): Promise<Podcast> => {

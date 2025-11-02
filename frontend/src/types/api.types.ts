@@ -22,3 +22,29 @@ export interface SearchParams {
   country?: string;
 }
 
+export enum PodcastSortBy {
+  CREATED_AT = 'createdAt',
+  RELEASE_DATE = 'releaseDate',
+  TRACK_NAME = 'trackName',
+  ARTIST_NAME = 'artistName',
+  TRACK_COUNT = 'trackCount',
+}
+
+export enum SortOrder {
+  ASC = 'ASC',
+  DESC = 'DESC',
+}
+
+export interface FilterParams {
+  limit?: number;
+  offset?: number;
+  sortBy?: PodcastSortBy;
+  sortOrder?: SortOrder;
+  genre?: string;
+  country?: string;
+  explicitContent?: boolean;
+  search?: string;
+  minTrackCount?: number;
+  maxTrackCount?: number;
+}
+

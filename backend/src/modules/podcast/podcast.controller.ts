@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 import { PodcastService } from './podcast.service';
 import { SearchPodcastDto } from './dto/search-podcast.dto';
+import { FilterPodcastDto } from './dto/filter-podcast.dto';
 import { PodcastResponseDto, PodcastListResponseDto } from './dto/podcast-response.dto';
 import { TransformInterceptor } from '../../common/interceptors/transform.interceptor';
 
@@ -22,6 +23,23 @@ export class PodcastController {
     @Query(new ValidationPipe({ transform: true })) searchDto: SearchPodcastDto,
   ): Promise<PodcastListResponseDto> {
     return this.podcastService.search(searchDto);
+  }
+
+  @Get('filter')
+  async filter(
+    @Query(new ValidationPipe({ transform: true })) filterDto: FilterPodcastDto,
+  ): Promise<PodcastListResponseDto> {
+    return this.podcastService.findAllWithFilters(filterDto);
+  }
+
+  @Get('genres')
+  async getGenres(): Promise<{ genres: string[] }> {
+    return this.podcastService.getAllGenres();
+  }
+
+  @Get('countries')
+  async getCountries(): Promise<{ countries: string[] }> {
+    return this.podcastService.getAllCountries();
   }
 
   @Get()

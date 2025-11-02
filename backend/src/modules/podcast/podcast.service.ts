@@ -1,9 +1,10 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, SelectQueryBuilder } from 'typeorm';
 import { Podcast } from './entities/podcast.entity';
 import { ITunesService } from '../itunes/itunes.service';
 import { SearchPodcastDto } from './dto/search-podcast.dto';
+import { FilterPodcastDto } from './dto/filter-podcast.dto';
 import { PodcastResponseDto, PodcastListResponseDto } from './dto/podcast-response.dto';
 import { ITunesPodcast } from './interfaces/itunes-response.interface';
 
@@ -58,6 +59,102 @@ export class PodcastService {
       limit,
       offset,
     };
+  }
+
+  async findAllWithFilters(filterDto: FilterPodcastDto): Promise<PodcastListResponseDto> {
+    const {
+      limit = 20,
+      offset = 0,
+      sortBy = 'createdAt',
+      sortOrder = 'DESC',
+      genre,
+      country,
+      explicitContent,
+      search,
+      minTrackCount,
+      maxTrackCount,
+    } = filterDto;
+
+    this.logger.debug(`Finding podcasts with filters: ${JSON.stringify(filterDto)}`);
+
+    const queryBuilder = this.podcastRepository.createQueryBuilder('podcast');
+
+    // Apply filters
+    if (genre) {
+      queryBuilder.andWhere('podcast.primaryGenreName = :genre', { genre });
+    }
+
+    if (country) {
+      queryBuilder.andWhere('podcast.country = :country', { country });
+    }
+
+    if (explicitContent !== undefined) {
+      queryBuilder.andWhere('podcast.trackExplicitContent = :explicitContent', {
+        explicitContent,
+      });
+    }
+
+    if (search) {
+      queryBuilder.andWhere(
+        '(LOWER(podcast.trackName) LIKE LOWER(:search) OR LOWER(podcast.artistName) LIKE LOWER(:search) OR LOWER(podcast.description) LIKE LOWER(:search))',
+        { search: `%${search}%` },
+      );
+    }
+
+    if (minTrackCount !== undefined) {
+      queryBuilder.andWhere('podcast.trackCount >= :minTrackCount', { minTrackCount });
+    }
+
+    if (maxTrackCount !== undefined) {
+      queryBuilder.andWhere('podcast.trackCount <= :maxTrackCount', { maxTrackCount });
+    }
+
+    // Apply sorting
+    const sortField = `podcast.${sortBy}`;
+    queryBuilder.orderBy(sortField, sortOrder);
+
+    // Apply pagination
+    queryBuilder.skip(offset).take(limit);
+
+    // Execute query
+    const [podcasts, total] = await queryBuilder.getManyAndCount();
+
+    return {
+      podcasts: podcasts.map((podcast) => PodcastResponseDto.fromEntity(podcast)),
+      total,
+      limit,
+      offset,
+    };
+  }
+
+  async getAllGenres(): Promise<{ genres: string[] }> {
+    this.logger.debug('Fetching all unique genres');
+
+    const result = await this.podcastRepository
+      .createQueryBuilder('podcast')
+      .select('DISTINCT podcast.primaryGenreName', 'genre')
+      .where('podcast.primaryGenreName IS NOT NULL')
+      .orderBy('podcast.primaryGenreName', 'ASC')
+      .getRawMany();
+
+    const genres = result.map((r) => r.genre).filter((g) => g);
+
+    return { genres };
+  }
+
+  async getAllCountries(): Promise<{ countries: string[] }> {
+    this.logger.debug('Fetching all unique countries');
+
+    const result = await this.podcastRepository
+      .createQueryBuilder('podcast')
+      .select('DISTINCT podcast.country', 'country')
+      .where('podcast.country IS NOT NULL')
+      .orderBy('podcast.country', 'ASC')
+      .getRawMany();
+
+    const countries = result.map((r) => r.country).filter((c) => c);
+
+    return { countries };
   }
 
   async findOne(id: number): Promise<PodcastResponseDto> {

@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Music, Search } from 'lucide-react';
+import { Music, Search, Library } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils/cn';
 
@@ -29,6 +29,17 @@ export function Header() {
           >
             الرئيسية
           </Link>
+          <Button 
+            asChild 
+            variant={pathname === '/podcasts' ? 'default' : 'ghost'} 
+            size="sm" 
+            className="gap-2"
+          >
+            <Link href="/podcasts">
+              <Library className="h-4 w-4" />
+              <span className="hidden sm:inline">المكتبة</span>
+            </Link>
+          </Button>
           <Button asChild variant={pathname === '/search' ? 'default' : 'ghost'} size="sm" className="gap-2">
             <Link href="/search">
               <Search className="h-4 w-4" />

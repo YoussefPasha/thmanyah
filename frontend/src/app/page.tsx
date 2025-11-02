@@ -92,7 +92,7 @@ export default async function HomePage() {
               </div>
               {podcasts.length > 0 && (
                 <Button asChild variant="outline" className="w-fit gap-2">
-                  <Link href="/search">
+                  <Link href="/podcasts">
                     عرض الكل
                     <ChevronLeft className="h-4 w-4" />
                   </Link>
@@ -122,7 +122,7 @@ export default async function HomePage() {
                     ابدأ البحث لاكتشاف وحفظ البودكاست في مجموعتك
                   </p>
                   <Button asChild size="lg" className="gap-2">
-                    <Link href="/search">
+                    <Link href="/podcasts">
                       <Search className="h-5 w-5" />
                       ابدأ البحث
                     </Link>
